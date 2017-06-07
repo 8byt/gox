@@ -8,7 +8,7 @@ import (
 	"bytes"
 	"fmt"
 	"go/ast"
-	"go/token"
+	"github.com/8byt/gox/token"
 	"os"
 	"strings"
 	"testing"

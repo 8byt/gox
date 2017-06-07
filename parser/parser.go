@@ -20,7 +20,7 @@ import (
 	"fmt"
 	"go/ast"
 	"go/scanner"
-	"go/token"
+	"github.com/8byt/gox/token"
 	"strconv"
 	"strings"
 	"unicode"

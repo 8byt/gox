@@ -10,7 +10,7 @@ import (
 	"bytes"
 	"errors"
 	"go/ast"
-	"go/token"
+	"github.com/8byt/gox/token"
 	"io"
 	"io/ioutil"
 	"os"

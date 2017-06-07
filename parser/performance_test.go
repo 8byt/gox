@@ -5,7 +5,7 @@
 package parser
 
 import (
-	"go/token"
+	"github.com/8byt/gox/token"
 	"io/ioutil"
 	"testing"
 )

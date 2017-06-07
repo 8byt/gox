@@ -7,7 +7,7 @@ package parser_test
 import (
 	"fmt"
 	"go/parser"
-	"go/token"
+	"github.com/8byt/gox/token"
 )
 
 func ExampleParseFile() {
@@ -30,5 +30,5 @@ func ExampleParseFile() {
 	//
 	// "fmt"
 	// "go/parser"
-	// "go/token"
+	// "github.com/8byt/gox/token"
 }
