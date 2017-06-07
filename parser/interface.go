@@ -9,7 +9,7 @@ package parser
 import (
 	"bytes"
 	"errors"
-	"go/ast"
+	"github.com/8byt/gox/ast"
 	"github.com/8byt/gox/token"
 	"io"
 	"io/ioutil"

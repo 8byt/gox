@@ -7,7 +7,7 @@ package parser
 import (
 	"bytes"
 	"fmt"
-	"go/ast"
+	"github.com/8byt/gox/ast"
 	"github.com/8byt/gox/token"
 	"os"
 	"strings"

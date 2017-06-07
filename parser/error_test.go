@@ -23,7 +23,7 @@
 package parser
 
 import (
-	"go/scanner"
+	"github.com/8byt/gox/scanner"
 	"github.com/8byt/gox/token"
 	"io/ioutil"
 	"path/filepath"
