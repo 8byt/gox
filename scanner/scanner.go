@@ -480,6 +480,42 @@ func (s *Scanner) scanString() string {
 	return string(s.src[offs:s.offset])
 }
 
+func (s *Scanner) scanOTag() string {
+	// '<' opening already consumed, and we know a '|' is here
+	offs := s.offset - 1
+	for {
+		ch := s.ch
+		if ch == '\n' || ch < 0 {
+			s.error(offs, "tag literal not terminated")
+			break
+		}
+		s.next()
+		if ch == '>' {
+			break
+		}
+	}
+
+	return string(s.src[offs:s.offset])
+}
+
+func (s *Scanner) scanCTag() string {
+	// '</' opening already consumed, and we know a '/' is here
+	offs := s.offset - 1
+	for {
+		ch := s.ch
+		if ch == '\n' || ch < 0 {
+			s.error(offs, "tag literal not terminated")
+			break
+		}
+		s.next()
+		if ch == '>' {
+			break
+		}
+	}
+
+	return string(s.src[offs:s.offset])
+}
+
 func stripCR(b []byte) []byte {
 	c := make([]byte, len(b))
 	i := 0
@@ -729,6 +765,14 @@ scanAgain:
 			if s.ch == '-' {
 				s.next()
 				tok = token.ARROW
+			} else if s.ch == '|' {
+				insertSemi = true
+				tok = token.OTAG
+				lit = s.scanOTag()
+			} else if s.ch == '/' {
+				insertSemi = true
+				tok = token.CTAG
+				lit = s.scanCTag()
 			} else {
 				tok = s.switch4(token.LSS, token.LEQ, '<', token.SHL, token.SHL_ASSIGN)
 			}

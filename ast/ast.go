@@ -270,6 +270,12 @@ type (
 		Rbrace token.Pos // position of "}"
 	}
 
+	GoxTagExpr struct {
+		Otag   token.Pos // position of <|asdf>
+		X      Expr      // expression inside GoxTag
+		Ctag   token.Pos // position of </asdf>
+	}
+
 	// A ParenExpr node represents a parenthesized expression.
 	ParenExpr struct {
 		Lparen token.Pos // position of "("
@@ -431,6 +437,7 @@ func (x *CompositeLit) Pos() token.Pos {
 	return x.Lbrace
 }
 func (x *ParenExpr) Pos() token.Pos      { return x.Lparen }
+func (x *GoxTagExpr) Pos() token.Pos     { return x.Otag }
 func (x *SelectorExpr) Pos() token.Pos   { return x.X.Pos() }
 func (x *IndexExpr) Pos() token.Pos      { return x.X.Pos() }
 func (x *SliceExpr) Pos() token.Pos      { return x.X.Pos() }
@@ -464,6 +471,7 @@ func (x *BasicLit) End() token.Pos       { return token.Pos(int(x.ValuePos) + le
 func (x *FuncLit) End() token.Pos        { return x.Body.End() }
 func (x *CompositeLit) End() token.Pos   { return x.Rbrace + 1 }
 func (x *ParenExpr) End() token.Pos      { return x.Rparen + 1 }
+func (x *GoxTagExpr) End() token.Pos     { return x.Ctag + 1 }
 func (x *SelectorExpr) End() token.Pos   { return x.Sel.End() }
 func (x *IndexExpr) End() token.Pos      { return x.Rbrack + 1 }
 func (x *SliceExpr) End() token.Pos      { return x.Rbrack + 1 }
@@ -495,6 +503,7 @@ func (*BasicLit) exprNode()       {}
 func (*FuncLit) exprNode()        {}
 func (*CompositeLit) exprNode()   {}
 func (*ParenExpr) exprNode()      {}
+func (*GoxTagExpr) exprNode()     {}
 func (*SelectorExpr) exprNode()   {}
 func (*IndexExpr) exprNode()      {}
 func (*SliceExpr) exprNode()      {}

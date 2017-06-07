@@ -28,6 +28,8 @@ const (
 	IMAG   // 123.45i
 	CHAR   // 'a'
 	STRING // "abc"
+	OTAG   // <|div>
+	CTAG   // </div>
 	literal_end
 
 	operator_beg
@@ -135,6 +137,8 @@ var tokens = [...]string{
 	IMAG:   "IMAG",
 	CHAR:   "CHAR",
 	STRING: "STRING",
+	OTAG:   "OTAG",
+	CTAG:   "CTAG",
 
 	ADD: "+",
 	SUB: "-",

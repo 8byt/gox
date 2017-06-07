@@ -650,6 +650,28 @@ func (p *parser) parseTypeName() ast.Expr {
 	return ident
 }
 
+func (p *parser) parseGoxTag() ast.Expr {
+	if p.trace {
+		defer un(trace(p, "GoxTag"))
+	}
+
+	otag := p.expect(token.OTAG)
+	p.exprLev++ // we're in the expression?
+	var content ast.Expr // tag content
+	content = p.parseRhs()
+
+	//
+	//if p.tok == token.STRING {
+	//	// example goodies
+	//
+	//}
+	ctag := p.expect(token.CTAG)
+	p.exprLev--
+
+	return &ast.GoxTagExpr{Otag: otag, X: content, Ctag: ctag}
+}
+
+
 func (p *parser) parseArrayType() ast.Expr {
 	if p.trace {
 		defer un(trace(p, "ArrayType"))
@@ -1041,6 +1063,8 @@ func (p *parser) tryIdentOrType() ast.Expr {
 		typ := p.parseType()
 		rparen := p.expect(token.RPAREN)
 		return &ast.ParenExpr{Lparen: lparen, X: typ, Rparen: rparen}
+	case token.OTAG:
+		return p.parseGoxTag()
 	}
 
 	// no type found
@@ -1370,6 +1394,7 @@ func (p *parser) checkExpr(x ast.Expr) ast.Expr {
 	case *ast.CompositeLit:
 	case *ast.ParenExpr:
 		panic("unreachable")
+	case *ast.GoxTagExpr:
 	case *ast.SelectorExpr:
 	case *ast.IndexExpr:
 	case *ast.SliceExpr:
