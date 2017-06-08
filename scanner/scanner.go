@@ -35,7 +35,7 @@ const (
 )
 
 type StackState struct {
-	mode goxMode
+	mode       goxMode
 	braceDepth int
 }
 
@@ -660,7 +660,7 @@ func (s *Scanner) switch4(tok0, tok1 token.Token, ch2 rune, tok2, tok3 token.Tok
 //
 func (s *Scanner) Scan() (pos token.Pos, tok token.Token, lit string) {
 	var f func() (token.Pos, token.Token, string)
-	switch s.goxState[len(s.goxState) - 1].mode {
+	switch s.goxState[len(s.goxState)-1].mode {
 	case GO:
 		f = s.scanGoMode
 	case GOX_TAG:
@@ -686,12 +686,12 @@ func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit strin
 		// TODO(danny) Push Go mode onto the stack
 	case '<':
 		s.next()
-		switch s.ch {
-		case '/':
+		switch {
+		case s.ch=='/':
 			tok = token.CTAG
 			lit = s.scanCTag()
 			// TODO(danny) pop state
-		case isLetter(s.ch):
+		case isLetter(s.ch)==true:
 			tok = token.OTAG
 			lit = s.scanOTag()
 			// TODO(danny) Push gox-tag
@@ -748,7 +748,7 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 		case '>':
 			tok = token.OTAG_END
 			// Pop stack and push bare words onto stack
-			s.goxState[len(s.goxState) - 1] = StackState{mode: BARE_WORDS, braceDepth: 0}
+			s.goxState[len(s.goxState)-1] = StackState{mode: BARE_WORDS, braceDepth: 0}
 		case '/':
 			if s.ch == '>' {
 				s.error(s.offset, "self-closing gox tags not supported")
