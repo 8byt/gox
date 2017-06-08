@@ -9,17 +9,18 @@ import (
 	"github.com/8byt/gox/token"
 )
 
+// should test for all of these
 //	case token.ASSIGN, token.EQL, token.NEQ, token.DEFINE,
 //token.LPAREN, token.LBRACE, token.COMMA, token.COLON,
 //token.RETURN, token.IF, token.SWITCH, token.CASE:
 
 func TestOtagParse(t *testing.T) {
-	//t.Log(doParseAst("return <a>hello world</a>"))
-	//t.Log(doParseAst("lol := <a>hahaha</a>"))
-	//t.Log(doParseAst("if <abc></abc> == <abc></abc> {}"))
-	//t.Log(doParseAst(`return <a attr="value">hello world</a>`))
-	//
-	//t.Log(doParseAst(`return <a attr="value" attr2={"bang"}>hello world</a>`))
+	t.Log(doParseAst("return <a>hello world</a>"))
+	t.Log(doParseAst("lol := <a>hahaha</a>"))
+	t.Log(doParseAst("if <abc></abc> == <abc></abc> {}"))
+	t.Log(doParseAst(`return <a attr="value">hello world</a>`))
+
+	t.Log(doParseAst(`return <a attr="value" attr2={"bang"}>hello world</a>`))
 	t.Log(doParseAst(`
 		return <a attr="value" go={func () string { return "go" }} func="yes">
 		   hello world
@@ -35,6 +36,7 @@ func TestOtagParse(t *testing.T) {
 			}()}
 		   </p>
 		</a>`))
+	// broken test case, need to make newlines in OTAGs okay
 	//t.Log(doParseAst(`
 	//	return <a attr="value"
 	//	   go={func () string { return "go" }}
