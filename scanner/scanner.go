@@ -669,11 +669,49 @@ func (s *Scanner) Scan() (pos token.Pos, tok token.Token, lit string) {
 }
 
 func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit string) {
+	// Whitespace matters in Bare Words mode, so do not call s.skipWhitespace()
 
-	//} else if s.ch == '/' {
-	//	insertSemi = true
-	//	tok = token.CTAG
-	//	lit = s.scanCTag()
+	// current token start
+	pos = s.file.Pos(s.offset)
+
+	switch s.ch {
+	case '{':
+		s.next()
+		tok = token.LBRACE
+		// TODO(danny) Push Go mode onto the stack
+	case '<':
+		s.next()
+		switch s.ch {
+		case '/':
+			tok = token.CTAG
+			lit = s.scanCTag()
+			// TODO(danny) pop state
+		case isLetter(s.ch):
+			tok = token.OTAG
+			lit = s.scanOTag()
+			// TODO(danny) Push gox-tag
+		}
+	default:
+		// Parse bare words
+		offs := s.offset
+		for {
+			if s.ch < 0 {
+				s.error(offs, "end of file during gox tag")
+				break
+			}
+			if s.ch == '{' || s.ch == '<' {
+				break
+			}
+			s.next()
+		}
+
+		lit = string(s.src[offs:s.offset])
+		tok = token.BARE_WORDS
+	}
+
+	// Save the last token for gox
+	s.lastToken = tok
+
 	return
 }
 
