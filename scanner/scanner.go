@@ -503,7 +503,7 @@ func (s *Scanner) scanString() string {
 
 // GOX opening tag
 func (s *Scanner) scanOTag() string {
-	// '<' opening already consumed, and we know a '|' is here
+	// '<' opening already consumed, and we know a letter is here
 	offs := s.offset - 1
 	for {
 		ch := s.ch
@@ -512,7 +512,7 @@ func (s *Scanner) scanOTag() string {
 			break
 		}
 		s.next()
-		if ch == '>' {
+		if !isLetter(s.ch) {
 			break
 		}
 	}
@@ -683,18 +683,21 @@ func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit strin
 	case '{':
 		s.next()
 		tok = token.LBRACE
-		// TODO(danny) Push Go mode onto the stack
+		// push Go mode onto the stack
+		s.goxState = append(s.goxState, StackState{mode: GO, braceDepth: 0})
 	case '<':
 		s.next()
 		switch {
 		case s.ch=='/':
 			tok = token.CTAG
 			lit = s.scanCTag()
-			// TODO(danny) pop state
+			// pop state
+			s.goxState = s.goxState[:len(s.goxState) - 1]
 		case isLetter(s.ch)==true:
 			tok = token.OTAG
 			lit = s.scanOTag()
-			// TODO(danny) Push gox-tag
+			// push gox-tag
+			s.goxState = append(s.goxState, StackState{mode: GOX_TAG})
 		}
 	default:
 		// Parse bare words
@@ -702,7 +705,8 @@ func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit strin
 		for {
 			if s.ch < 0 {
 				s.error(offs, "end of file during gox tag")
-				break
+				tok = token.ILLEGAL
+				return
 			}
 			if s.ch == '{' || s.ch == '<' {
 				break
@@ -748,7 +752,7 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 		case '>':
 			tok = token.OTAG_END
 			// Pop stack and push bare words onto stack
-			s.goxState[len(s.goxState)-1] = StackState{mode: BARE_WORDS, braceDepth: 0}
+			s.goxState[len(s.goxState)-1] = StackState{mode: BARE_WORDS}
 		case '/':
 			if s.ch == '>' {
 				s.error(s.offset, "self-closing gox tags not supported")

@@ -18,6 +18,8 @@ func TestOtagParse(t *testing.T) {
 	t.Log(doParseAst("lol := <a>hahaha</a>"))
 	t.Log(doParseAst("if <abc></abc> == <abc></abc> {}"))
 	t.Log(doParseAst(`return <a attr="value">hello world</a>`))
+
+	t.Skip()
 }
 
 func doTestExpr(strExpr string) {
