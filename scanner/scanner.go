@@ -11,11 +11,12 @@ package scanner
 import (
 	"bytes"
 	"fmt"
-	"github.com/8byt/gox/token"
 	"path/filepath"
 	"strconv"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/8byt/gox/token"
 )
 
 // An ErrorHandler may be provided to Scanner.Init. If a syntax error is
@@ -24,6 +25,14 @@ import (
 // the offending token.
 //
 type ErrorHandler func(pos token.Position, msg string)
+
+type goxMode int
+
+const (
+	GO goxMode = iota
+	GOXTAG
+	BAREWORDS
+)
 
 // A Scanner holds the scanner's internal state while processing
 // a given text. It can be allocated as part of another data
@@ -43,6 +52,10 @@ type Scanner struct {
 	rdOffset   int  // reading offset (position after current character)
 	lineOffset int  // current line offset
 	insertSemi bool // insert a semicolon before next newline
+
+	// Additional scanning state for gox
+	lastToken token.Token
+	goxState  goxMode
 
 	// public state - ok to modify
 	ErrorCount int // number of errors encountered
@@ -127,6 +140,9 @@ func (s *Scanner) Init(file *token.File, src []byte, err ErrorHandler, mode Mode
 	s.lineOffset = 0
 	s.insertSemi = false
 	s.ErrorCount = 0
+
+	s.lastToken = token.EOF
+	s.goxState = GO
 
 	s.next()
 	if s.ch == bom {
@@ -480,6 +496,7 @@ func (s *Scanner) scanString() string {
 	return string(s.src[offs:s.offset])
 }
 
+// GOX opening tag
 func (s *Scanner) scanOTag() string {
 	// '<' opening already consumed, and we know a '|' is here
 	offs := s.offset - 1
@@ -498,8 +515,9 @@ func (s *Scanner) scanOTag() string {
 	return string(s.src[offs:s.offset])
 }
 
+// GOX closing tag
 func (s *Scanner) scanCTag() string {
-	// '</' opening already consumed, and we know a '/' is here
+	// '<' opening already consumed, and we know a '/' is here
 	offs := s.offset - 1
 	for {
 		ch := s.ch
@@ -636,6 +654,34 @@ func (s *Scanner) switch4(tok0, tok1 token.Token, ch2 rune, tok2, tok3 token.Tok
 // and thus relative to the file set.
 //
 func (s *Scanner) Scan() (pos token.Pos, tok token.Token, lit string) {
+	var f func() (token.Pos, token.Token, string)
+	switch s.goxState {
+	case GO:
+		f = s.scanGo
+	case GOXTAG:
+		f = s.scanGoxTag
+	case BAREWORDS:
+		f = s.scanBareWords
+	}
+
+	pos, tok, lit = f()
+	return
+}
+
+func (s *Scanner) scanBareWords() (pos token.Pos, tok token.Token, lit string) {
+
+	//} else if s.ch == '/' {
+	//	insertSemi = true
+	//	tok = token.CTAG
+	//	lit = s.scanCTag()
+	return
+}
+
+func (s *Scanner) scanGoxTag() (pos token.Pos, tok token.Token, lit string) {
+	return
+}
+
+func (s *Scanner) scanGo() (pos token.Pos, tok token.Token, lit string) {
 scanAgain:
 	s.skipWhitespace()
 
@@ -667,6 +713,7 @@ scanAgain:
 		case -1:
 			if s.insertSemi {
 				s.insertSemi = false // EOF consumed
+				s.lastToken = token.SEMICOLON
 				return pos, token.SEMICOLON, "\n"
 			}
 			tok = token.EOF
@@ -675,6 +722,7 @@ scanAgain:
 			// set in the first place and exited early
 			// from s.skipWhitespace()
 			s.insertSemi = false // newline consumed
+			s.lastToken = token.SEMICOLON
 			return pos, token.SEMICOLON, "\n"
 		case '"':
 			insertSemi = true
@@ -765,14 +813,10 @@ scanAgain:
 			if s.ch == '-' {
 				s.next()
 				tok = token.ARROW
-			} else if s.ch == '|' {
+			} else if isLetter(s.ch) && goxLegal(s.lastToken) {
 				insertSemi = true
 				tok = token.OTAG
 				lit = s.scanOTag()
-			} else if s.ch == '/' {
-				insertSemi = true
-				tok = token.CTAG
-				lit = s.scanCTag()
 			} else {
 				tok = s.switch4(token.LSS, token.LEQ, '<', token.SHL, token.SHL_ASSIGN)
 			}
@@ -801,9 +845,27 @@ scanAgain:
 			lit = string(ch)
 		}
 	}
+
+	// Save the last token for gox
+	s.lastToken = tok
 	if s.mode&dontInsertSemis == 0 {
 		s.insertSemi = insertSemi
 	}
 
 	return
+}
+
+// GoxLegal returns whether a gox tag (<XML syntax>) can follow the given token.
+// Otherwise, a "<" sign is interpreted as a less than.
+func goxLegal(tok token.Token) bool {
+	switch tok {
+
+	case token.ASSIGN, token.EQL, token.NEQ, token.DEFINE,
+		token.LPAREN, token.LBRACE, token.COMMA, token.COLON,
+		token.RETURN, token.IF, token.SWITCH, token.CASE:
+
+		return true
+	}
+
+	return false
 }
