@@ -859,10 +859,18 @@ scanAgain:
 			insertSemi = true
 			tok = token.RBRACK
 		case '{':
+			// increment brace depth
+			s.goxState[len(s.goxState) - 1].braceDepth += 1
 			tok = token.LBRACE
 		case '}':
 			insertSemi = true
 			tok = token.RBRACE
+			curState := &s.goxState[len(s.goxState) - 1]
+			curState.braceDepth -= 1
+			if curState.braceDepth < 0 {
+				// we can't account for this brace in our view, pop
+				s.goxState = s.goxState[:len(s.goxState) - 1]
+			}
 		case '+':
 			tok = s.switch3(token.ADD, token.ADD_ASSIGN, '+', token.INC)
 			if tok == token.INC {

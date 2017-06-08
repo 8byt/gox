@@ -14,10 +14,33 @@ import (
 //token.RETURN, token.IF, token.SWITCH, token.CASE:
 
 func TestOtagParse(t *testing.T) {
-	t.Log(doParseAst("return <a>hello world</a>"))
-	t.Log(doParseAst("lol := <a>hahaha</a>"))
-	t.Log(doParseAst("if <abc></abc> == <abc></abc> {}"))
-	t.Log(doParseAst(`return <a attr="value">hello world</a>`))
+	//t.Log(doParseAst("return <a>hello world</a>"))
+	//t.Log(doParseAst("lol := <a>hahaha</a>"))
+	//t.Log(doParseAst("if <abc></abc> == <abc></abc> {}"))
+	//t.Log(doParseAst(`return <a attr="value">hello world</a>`))
+	//
+	//t.Log(doParseAst(`return <a attr="value" attr2={"bang"}>hello world</a>`))
+	t.Log(doParseAst(`
+		return <a attr="value" go={func () string { return "go" }} func="yes">
+		   hello world
+		</a>`))
+	t.Log(doParseAst(`
+		return <a attr="value" go={func () string { return "go" }} func="yes">
+		   hello world<div></div>
+		   <p class="class isn't a reserved keyword">
+		   	yeah that's right
+		   	{<back at it="again"></back>}
+		   	{func () vecty.Component {
+				return <wow></wow>
+			}()}
+		   </p>
+		</a>`))
+	//t.Log(doParseAst(`
+	//	return <a attr="value"
+	//	   go={func () string { return "go" }}
+	//	   func="yes">
+	//	   hello world
+	//	</a>`))
 
 	t.Skip()
 }
@@ -31,6 +54,9 @@ func doParseAst(strExpr string) (result string) {
 	// src is the input that we want to tokenize.
 	src := []byte(strExpr)
 
+	func () string {
+		return ""
+	}()
 	// Initialize the scanner.
 	var s scanner.Scanner
 	fset := token.NewFileSet()                      // positions are relative to fset
