@@ -141,7 +141,7 @@ func (s *Scanner) Init(file *token.File, src []byte, err ErrorHandler, mode Mode
 	s.insertSemi = false
 	s.ErrorCount = 0
 
-	s.lastToken = token.EOF
+	s.lastToken = token.ILLEGAL
 	s.goxState = GO
 
 	s.next()
@@ -657,18 +657,18 @@ func (s *Scanner) Scan() (pos token.Pos, tok token.Token, lit string) {
 	var f func() (token.Pos, token.Token, string)
 	switch s.goxState {
 	case GO:
-		f = s.scanGo
+		f = s.scanGoMode
 	case GOXTAG:
-		f = s.scanGoxTag
+		f = s.scanGoxTagMode
 	case BAREWORDS:
-		f = s.scanBareWords
+		f = s.scanBareWordsMode
 	}
 
 	pos, tok, lit = f()
 	return
 }
 
-func (s *Scanner) scanBareWords() (pos token.Pos, tok token.Token, lit string) {
+func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit string) {
 
 	//} else if s.ch == '/' {
 	//	insertSemi = true
@@ -677,11 +677,55 @@ func (s *Scanner) scanBareWords() (pos token.Pos, tok token.Token, lit string) {
 	return
 }
 
-func (s *Scanner) scanGoxTag() (pos token.Pos, tok token.Token, lit string) {
+func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) {
+	s.skipWhitespace()
+
+	// current token start
+	pos = s.file.Pos(s.offset)
+
+	switch ch := s.ch; {
+	case isLetter(ch):
+		lit = s.scanIdentifier()
+		tok = token.IDENT
+	default:
+		s.next()
+		switch ch {
+		case -1:
+			s.error(s.offset, "reached illegal EOF in gox tag")
+		case '=':
+			tok = token.ASSIGN
+		case '{':
+			tok = token.LBRACE
+			// Push Go mode onto the stack
+		case '"':
+			tok = token.STRING
+			// TODO(danny) Escape gox strings with XML rules
+			lit = s.scanString()
+		case '>':
+			tok = token.OTAG_END
+			// Pop stack
+			// Push bare words onto stack
+		case '/':
+			if s.ch == '>' {
+				s.error(s.offset, "self-closing gox tags not supported")
+			}
+		default:
+			// next reports unexpected BOMs - don't repeat
+			if ch != bom {
+				s.error(s.file.Offset(pos), fmt.Sprintf("illegal character %#U", ch))
+			}
+			tok = token.ILLEGAL
+			lit = string(ch)
+		}
+	}
+
+	// Save the last token for gox
+	s.lastToken = tok
+
 	return
 }
 
-func (s *Scanner) scanGo() (pos token.Pos, tok token.Token, lit string) {
+func (s *Scanner) scanGoMode() (pos token.Pos, tok token.Token, lit string) {
 scanAgain:
 	s.skipWhitespace()
 
