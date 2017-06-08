@@ -656,7 +656,7 @@ func (p *parser) parseGoxTag() ast.Expr {
 	}
 
 	otag := p.expect(token.OTAG)
-	p.exprLev++ // we're in the expression?
+	p.exprLev++          // we're in the expression?
 	var content ast.Expr // tag content
 	content = p.parseRhs()
 
@@ -670,7 +670,6 @@ func (p *parser) parseGoxTag() ast.Expr {
 
 	return &ast.GoxTagExpr{Otag: otag, X: content, Ctag: ctag}
 }
-
 
 func (p *parser) parseArrayType() ast.Expr {
 	if p.trace {
