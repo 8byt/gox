@@ -30,9 +30,14 @@ type goxMode int
 
 const (
 	GO goxMode = iota
-	GOXTAG
-	BAREWORDS
+	GOX_TAG
+	BARE_WORDS
 )
+
+type StackState struct {
+	mode goxMode
+	braceDepth int
+}
 
 // A Scanner holds the scanner's internal state while processing
 // a given text. It can be allocated as part of another data
@@ -55,7 +60,7 @@ type Scanner struct {
 
 	// Additional scanning state for gox
 	lastToken token.Token
-	goxState  goxMode
+	goxState  []StackState
 
 	// public state - ok to modify
 	ErrorCount int // number of errors encountered
@@ -142,7 +147,7 @@ func (s *Scanner) Init(file *token.File, src []byte, err ErrorHandler, mode Mode
 	s.ErrorCount = 0
 
 	s.lastToken = token.ILLEGAL
-	s.goxState = GO
+	s.goxState = []StackState{{mode: GO, braceDepth: 0}}
 
 	s.next()
 	if s.ch == bom {
@@ -655,12 +660,12 @@ func (s *Scanner) switch4(tok0, tok1 token.Token, ch2 rune, tok2, tok3 token.Tok
 //
 func (s *Scanner) Scan() (pos token.Pos, tok token.Token, lit string) {
 	var f func() (token.Pos, token.Token, string)
-	switch s.goxState {
+	switch s.goxState[len(s.goxState) - 1].mode {
 	case GO:
 		f = s.scanGoMode
-	case GOXTAG:
+	case GOX_TAG:
 		f = s.scanGoxTagMode
-	case BAREWORDS:
+	case BARE_WORDS:
 		f = s.scanBareWordsMode
 	}
 
@@ -696,15 +701,16 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 			tok = token.ASSIGN
 		case '{':
 			tok = token.LBRACE
-			// Push Go mode onto the stack
+			// TODO(danny) Push Go mode onto the stack
+			s.goxState = append(s.goxState, StackState{mode: GO, braceDepth: 0})
 		case '"':
 			tok = token.STRING
 			// TODO(danny) Escape gox strings with XML rules
 			lit = s.scanString()
 		case '>':
 			tok = token.OTAG_END
-			// Pop stack
-			// Push bare words onto stack
+			// Pop stack and push bare words onto stack
+			s.goxState[len(s.goxState) - 1] = StackState{mode: BARE_WORDS, braceDepth: 0}
 		case '/':
 			if s.ch == '>' {
 				s.error(s.offset, "self-closing gox tags not supported")
@@ -861,6 +867,7 @@ scanAgain:
 				insertSemi = true
 				tok = token.OTAG
 				lit = s.scanOTag()
+				s.goxState = append(s.goxState, StackState{mode: GOX_TAG, braceDepth: 0})
 			} else {
 				tok = s.switch4(token.LSS, token.LEQ, '<', token.SHL, token.SHL_ASSIGN)
 			}
