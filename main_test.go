@@ -2,29 +2,23 @@ package main
 
 import (
 	"fmt"
+	"testing"
 
 	"github.com/8byt/gox/parser"
 	"github.com/8byt/gox/scanner"
 	"github.com/8byt/gox/token"
 )
 
-func main() {
-	fmt.Println("Hello World")
-	testExpr(`1 + 2`)
-	testExpr(`int[...] {1, 2, 3}`)
-	testExpr(`func() { return <div>12</div>; }`)
-
-	parseAst("var tokens = [...]string {\n 2: \"sting\"}")
-
-	parseAst("var tagYo = <div>{help}</div>")
+func TestOtagParse(t *testing.T) {
+	t
 }
 
-func testExpr(strExpr string) {
+func doTestExpr(strExpr string) {
 	expr, err := parser.ParseExpr(strExpr)
 	fmt.Printf("err: %v value: %v\n", err, expr)
 }
 
-func parseAst(strExpr string) {
+func doParseAst(strExpr string) (result string) {
 	// src is the input that we want to tokenize.
 	src := []byte(strExpr)
 
@@ -40,6 +34,8 @@ func parseAst(strExpr string) {
 		if tok == token.EOF {
 			break
 		}
-		fmt.Printf("%s\t%s\t%q\n", fset.Position(pos), tok, lit)
+		result += fmt.Sprintf("%s\t%s\t%q\n", fset.Position(pos), tok, lit)
 	}
+
+	return result
 }
