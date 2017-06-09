@@ -501,25 +501,6 @@ func (s *Scanner) scanString() string {
 	return string(s.src[offs:s.offset])
 }
 
-// GOX opening tag
-func (s *Scanner) scanOTag() string {
-	// '<' opening already consumed, and we know a letter is here
-	offs := s.offset - 1
-	for {
-		ch := s.ch
-		if ch == '\n' || ch < 0 {
-			s.error(offs, "tag literal not terminated")
-			break
-		}
-		s.next()
-		if !isLetter(s.ch) {
-			break
-		}
-	}
-
-	return string(s.src[offs:s.offset])
-}
-
 // GOX closing tag
 func (s *Scanner) scanCTag() string {
 	// '<' opening already consumed, and we know a '/' is here
@@ -674,6 +655,7 @@ func (s *Scanner) Scan() (pos token.Pos, tok token.Token, lit string) {
 }
 
 func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit string) {
+	s.insertSemi = false
 	// Whitespace matters in Bare Words mode, so do not call s.skipWhitespace()
 
 	// current token start
@@ -688,14 +670,13 @@ func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit strin
 	case '<':
 		s.next()
 		switch {
-		case s.ch=='/':
+		case s.ch == '/':
 			tok = token.CTAG
 			lit = s.scanCTag()
 			// pop state
-			s.goxState = s.goxState[:len(s.goxState) - 1]
-		case isLetter(s.ch)==true:
+			s.goxState = s.goxState[:len(s.goxState)-1]
+		case isLetter(s.ch) == true:
 			tok = token.OTAG
-			lit = s.scanOTag()
 			// push gox-tag
 			s.goxState = append(s.goxState, StackState{mode: GOX_TAG})
 		}
@@ -862,16 +843,16 @@ scanAgain:
 			tok = token.RBRACK
 		case '{':
 			// increment brace depth
-			s.goxState[len(s.goxState) - 1].braceDepth += 1
+			s.goxState[len(s.goxState)-1].braceDepth += 1
 			tok = token.LBRACE
 		case '}':
 			insertSemi = true
 			tok = token.RBRACE
-			curState := &s.goxState[len(s.goxState) - 1]
+			curState := &s.goxState[len(s.goxState)-1]
 			curState.braceDepth -= 1
 			if curState.braceDepth < 0 {
 				// we can't account for this brace in our view, pop
-				s.goxState = s.goxState[:len(s.goxState) - 1]
+				s.goxState = s.goxState[:len(s.goxState)-1]
 			}
 		case '+':
 			tok = s.switch3(token.ADD, token.ADD_ASSIGN, '+', token.INC)
@@ -916,9 +897,7 @@ scanAgain:
 				s.next()
 				tok = token.ARROW
 			} else if isLetter(s.ch) && goxLegal(s.lastToken) {
-				insertSemi = true
 				tok = token.OTAG
-				lit = s.scanOTag()
 				s.goxState = append(s.goxState, StackState{mode: GOX_TAG, braceDepth: 0})
 			} else {
 				tok = s.switch4(token.LSS, token.LEQ, '<', token.SHL, token.SHL_ASSIGN)
