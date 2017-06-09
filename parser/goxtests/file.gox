@@ -5,7 +5,7 @@ import "github.com/gopherjs/vecty"
 func main () vecty.Component {
     return <div></div>
 }
-
+/*
 func withWords () vecty.Component {
     return <b>bold move</b>
 }
@@ -43,3 +43,4 @@ func oohBoy () vecty.Component {
         {asAnArg(<p>help I'm caught in the web</p>)}
     </div>
 }
+*/

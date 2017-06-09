@@ -1,11 +1,13 @@
 package parser
 
 import (
+	"bytes"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/8byt/gox/ast"
 	"github.com/8byt/gox/token"
 )
 
@@ -21,12 +23,19 @@ func TestGoxParse(t *testing.T) {
 	for _, fi := range list {
 		name := fi.Name()
 
-		if !fi.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".src") {
+		if !fi.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".gox") {
 			t.Run(name, func(t *testing.T) {
-				_, err := ParseFile(token.NewFileSet(), filepath.Join(goxtestsfolder, name), nil, DeclarationErrors)
+				fset := token.NewFileSet()
+				f, err := ParseFile(fset, filepath.Join(goxtestsfolder, name), nil, DeclarationErrors)
+
 				if err != nil {
 					t.Fatalf("ParseFile(%s): %v", name, err)
 				}
+
+				buf := bytes.NewBufferString("\n")
+				ast.Fprint(buf, fset, f, ast.NotNilFilter)
+				t.Log(buf.String())
+
 			})
 		}
 	}
