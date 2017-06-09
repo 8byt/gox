@@ -1,0 +1,45 @@
+package main
+
+import "github.com/gopherjs/vecty"
+
+func main () vecty.Component {
+    return <div></div>
+}
+
+func withWords () vecty.Component {
+    return <b>bold move</b>
+}
+
+func withGo () vecty.Component {
+    return <i>{"Gox"}</i>
+}
+
+func withMore () vecty.Component {
+    return <div><h1>A Whole New Go</h1></div>
+}
+
+func nowWithProps () vecty.Component {
+    return <div props="dot" props={"." + "props"} empty>now introducing: props</div>
+}
+
+func rampingThingsUp () vecty.Component {
+    return <div class="classy">
+        <blink>Netscape era</blink>
+        <marquee>         where is it</marquee>
+    </div>
+}
+
+func asAnArg(arg *vecty.Component) vecty.Component {
+    return arg
+}
+
+func oohBoy () vecty.Component {
+    header := withMore()
+    content := nowWithProps()
+
+    return <div class="content">
+        {header}
+        {content}
+        {asAnArg(<p>help I'm caught in the web</p>)}
+    </div>
+}
