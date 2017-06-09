@@ -39,6 +39,25 @@ type StackState struct {
 	braceDepth int
 }
 
+type goxStack struct {
+	*StackState
+	stack []StackState
+}
+
+func (s *goxStack) push(mode goxMode) {
+	s.stack = append(s.stack, StackState{mode: mode, braceDepth: 0})
+	s.StackState = &s.stack[len(s.stack)-1]
+}
+
+func (s *goxStack) pop() error {
+	if len(s.stack) <= 1 {
+		return fmt.Errorf("Unable to pop empty gox stack")
+	}
+	s.stack = s.stack[:len(s.stack)-1]
+	s.StackState = &s.stack[len(s.stack)-1]
+	return nil
+}
+
 // A Scanner holds the scanner's internal state while processing
 // a given text. It can be allocated as part of another data
 // structure but must be initialized via Init before use.
@@ -60,7 +79,7 @@ type Scanner struct {
 
 	// Additional scanning state for gox
 	lastToken token.Token
-	goxState  []StackState
+	goxState  goxStack
 
 	// public state - ok to modify
 	ErrorCount int // number of errors encountered
@@ -147,7 +166,7 @@ func (s *Scanner) Init(file *token.File, src []byte, err ErrorHandler, mode Mode
 	s.ErrorCount = 0
 
 	s.lastToken = token.ILLEGAL
-	s.goxState = []StackState{{mode: GO, braceDepth: 0}}
+	s.goxState.push(GO)
 
 	s.next()
 	if s.ch == bom {
@@ -641,7 +660,7 @@ func (s *Scanner) switch4(tok0, tok1 token.Token, ch2 rune, tok2, tok3 token.Tok
 //
 func (s *Scanner) Scan() (pos token.Pos, tok token.Token, lit string) {
 	var f func() (token.Pos, token.Token, string)
-	switch s.goxState[len(s.goxState)-1].mode {
+	switch s.goxState.mode {
 	case GO:
 		f = s.scanGoMode
 	case GOX_TAG:
@@ -666,7 +685,7 @@ func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit strin
 		s.next()
 		tok = token.LBRACE
 		// push Go mode onto the stack
-		s.goxState = append(s.goxState, StackState{mode: GO, braceDepth: 0})
+		s.goxState.push(GO)
 	case '<':
 		s.next()
 		switch {
@@ -674,11 +693,15 @@ func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit strin
 			tok = token.CTAG
 			lit = s.scanCTag()
 			// pop state
-			s.goxState = s.goxState[:len(s.goxState)-1]
+			err := s.goxState.pop()
+			if err != nil {
+				s.error(s.offset, err.Error())
+				tok = token.ILLEGAL
+			}
 		case isLetter(s.ch) == true:
 			tok = token.OTAG
 			// push gox-tag
-			s.goxState = append(s.goxState, StackState{mode: GOX_TAG})
+			s.goxState.push(GOX_TAG)
 		}
 	default:
 		// Parse bare words
@@ -726,7 +749,7 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 		case '{':
 			tok = token.LBRACE
 			// push Go mode onto the stack
-			s.goxState = append(s.goxState, StackState{mode: GO, braceDepth: 0})
+			s.goxState.push(GO)
 		case '"':
 			tok = token.STRING
 			// TODO(danny) Escape gox strings with XML rules
@@ -734,7 +757,12 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 		case '>':
 			tok = token.OTAG_END
 			// Pop stack and push bare words onto stack
-			s.goxState[len(s.goxState)-1] = StackState{mode: BARE_WORDS}
+			err := s.goxState.pop()
+			s.goxState.push(BARE_WORDS)
+			if err != nil {
+				s.error(s.offset, err.Error())
+			}
+
 		case '/':
 			if s.ch == '>' {
 				// TODO make them supported
@@ -843,16 +871,18 @@ scanAgain:
 			tok = token.RBRACK
 		case '{':
 			// increment brace depth
-			s.goxState[len(s.goxState)-1].braceDepth += 1
+			s.goxState.braceDepth++
 			tok = token.LBRACE
 		case '}':
 			insertSemi = true
 			tok = token.RBRACE
-			curState := &s.goxState[len(s.goxState)-1]
-			curState.braceDepth -= 1
-			if curState.braceDepth < 0 {
-				// we can't account for this brace in our view, pop
-				s.goxState = s.goxState[:len(s.goxState)-1]
+			// Check to see if our depth is negative
+			s.goxState.braceDepth--
+			if s.goxState.braceDepth < 0 {
+				err := s.goxState.pop()
+				if err != nil {
+					s.error(s.offset, err.Error())
+				}
 			}
 		case '+':
 			tok = s.switch3(token.ADD, token.ADD_ASSIGN, '+', token.INC)
@@ -898,7 +928,9 @@ scanAgain:
 				tok = token.ARROW
 			} else if isLetter(s.ch) && goxLegal(s.lastToken) {
 				tok = token.OTAG
-				s.goxState = append(s.goxState, StackState{mode: GOX_TAG, braceDepth: 0})
+
+				// Push GOX_TAG mode onto the stack
+				s.goxState.push(GOX_TAG)
 			} else {
 				tok = s.switch4(token.LSS, token.LEQ, '<', token.SHL, token.SHL_ASSIGN)
 			}
