@@ -36,13 +36,13 @@ func TestOtagParse(t *testing.T) {
 			}()}
 		   </p>
 		</a>`))
-	// broken test case, need to make newlines in OTAGs okay
-	//t.Log(doParseAst(`
-	//	return <a attr="value"
-	//	   go={func () string { return "go" }}
-	//	   func="yes">
-	//	   hello world
-	//	</a>`))
+	// check to see if newlines in OTAGs okay
+	t.Log(doParseAst(`
+		return <a attr="value"
+		   go={func () string { return "go" }}
+		   func="yes">
+		   hello world
+		</a>`))
 
 	t.Skip()
 }

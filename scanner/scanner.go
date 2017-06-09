@@ -725,6 +725,7 @@ func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit strin
 }
 
 func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) {
+	s.insertSemi = false
 	s.skipWhitespace()
 
 	// current token start
@@ -735,8 +736,7 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 		lit = s.scanIdentifier()
 		tok = token.IDENT
 	default:
-		s.next() // TODO make newlines legal in gox-tag mode
-		// that might require making a new .next()...
+		s.next()
 		switch ch {
 		case -1:
 			s.error(s.offset, "reached illegal EOF in gox tag")
