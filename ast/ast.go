@@ -285,6 +285,12 @@ type (
 		Ctag    *CtagExpr      // </asdf>
 	}
 
+	GoExpr struct {
+		Lbrace token.Pos
+		X      Expr
+		Rbrace token.Pos
+	}
+
 	CtagExpr struct {
 		Lt    token.Pos // position of "<"
 		Value string    // "</asdf>"
@@ -453,6 +459,7 @@ func (x *CompositeLit) Pos() token.Pos {
 func (x *ParenExpr) Pos() token.Pos      { return x.Lparen }
 func (x *BareWordsExpr) Pos() token.Pos  { return x.ValuePos }
 func (x *GoxExpr) Pos() token.Pos        { return x.Otag }
+func (x *GoExpr) Pos() token.Pos         { return x.Lbrace }
 func (x *CtagExpr) Pos() token.Pos       { return x.Lt }
 func (x *SelectorExpr) Pos() token.Pos   { return x.X.Pos() }
 func (x *IndexExpr) Pos() token.Pos      { return x.X.Pos() }
@@ -488,6 +495,7 @@ func (x *FuncLit) End() token.Pos        { return x.Body.End() }
 func (x *CompositeLit) End() token.Pos   { return x.Rbrace + 1 }
 func (x *ParenExpr) End() token.Pos      { return x.Rparen + 1 }
 func (x *GoxExpr) End() token.Pos        { return x.Ctag.End() }
+func (x *GoExpr) End() token.Pos         { return x.Rbrace }
 func (x *BareWordsExpr) End() token.Pos  { return token.Pos(int(x.ValuePos) + len(x.Value)) }
 func (x *CtagExpr) End() token.Pos       { return token.Pos(int(x.Lt) + len(x.Value)) }
 func (x *SelectorExpr) End() token.Pos   { return x.Sel.End() }
@@ -522,6 +530,7 @@ func (*FuncLit) exprNode()        {}
 func (*CompositeLit) exprNode()   {}
 func (*ParenExpr) exprNode()      {}
 func (*GoxExpr) exprNode()        {}
+func (*GoExpr) exprNode()         {}
 func (*BareWordsExpr) exprNode()  {}
 func (*CtagExpr) exprNode()       {}
 func (*SelectorExpr) exprNode()   {}

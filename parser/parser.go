@@ -671,7 +671,15 @@ func (p *parser) parseGoxTag() ast.Expr {
 	var content []ast.Expr // tag contents
 
 	for p.tok != token.CTAG {
-		content = append(content, p.parseRhs())
+		switch p.tok {
+		case token.LBRACE:
+			content = append(content, p.parseGoExpr())
+		case token.BARE_WORDS:
+			content = append(content, p.parseBareWords())
+		default:
+			p.error(p.pos, "Unexpected token in gox tag")
+			return nil
+		}
 	}
 
 	lit := p.lit
@@ -693,7 +701,15 @@ func (p *parser) parseGoxAttr() *ast.GoxAttrStmt {
 		return &ast.GoxAttrStmt{Lhs: lhs, Rhs: nil}
 	}
 	p.expect(token.ASSIGN)
-	rhs := p.parseRhs()
+	var rhs ast.Expr
+	switch p.tok {
+	case token.LBRACE:
+		rhs = p.parseGoExpr()
+	case token.STRING:
+		rhs = p.parseRhs() // yeaaaah
+	default:
+		p.error(p.pos, "Encountered illegal attribute value in gox tag")
+	}
 
 	return &ast.GoxAttrStmt{Lhs: lhs, Rhs: rhs}
 }
@@ -707,6 +723,13 @@ func (p *parser) parseBareWords() *ast.BareWordsExpr {
 	pos := p.expect(token.BARE_WORDS)
 
 	return &ast.BareWordsExpr{ValuePos: pos, Value: lit}
+}
+
+func (p *parser) parseGoExpr() *ast.GoExpr {
+	lPos := p.expect(token.LBRACE)
+	expr := p.parseRhs()
+	rPos := p.expect(token.RBRACE)
+	return &ast.GoExpr{Lbrace: lPos, X: expr, Rbrace: rPos}
 }
 
 func (p *parser) parseArrayType() ast.Expr {

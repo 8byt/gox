@@ -1,0 +1,10 @@
+package main
+
+import "github.com/gopherjs/vecty"
+
+func main () vecty.Component {
+    return <div class="classy">
+        <blink>Netscape era</blink>
+        <marquee>         where is it</marquee>
+    </div>
+}

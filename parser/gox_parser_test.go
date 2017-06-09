@@ -26,7 +26,7 @@ func TestGoxParse(t *testing.T) {
 		if !fi.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".gox") {
 			t.Run(name, func(t *testing.T) {
 				fset := token.NewFileSet()
-				f, err := ParseFile(fset, filepath.Join(goxtestsfolder, name), nil, DeclarationErrors)
+				f, err := ParseFile(fset, filepath.Join(goxtestsfolder, name), nil, DeclarationErrors|Trace)
 
 				if err != nil {
 					t.Fatalf("ParseFile(%s): %v", name, err)

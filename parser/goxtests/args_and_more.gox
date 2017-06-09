@@ -1,0 +1,18 @@
+package main
+
+import "github.com/gopherjs/vecty"
+
+func asAnArg(arg *vecty.Component) vecty.Component {
+    return arg
+}
+
+func oohBoy () vecty.Component {
+    header := withMore()
+    content := nowWithProps()
+
+    return <div class="content">
+        {header}
+        {content}
+        {asAnArg(<p>help I'm caught in the web</p>)}
+    </div>
+}

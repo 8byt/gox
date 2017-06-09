@@ -3,5 +3,5 @@ package main
 import "github.com/gopherjs/vecty"
 
 func main () vecty.Component {
-    return <div></div>
+    return <i>{"Gox"}</i>
 }
