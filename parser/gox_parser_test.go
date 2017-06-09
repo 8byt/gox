@@ -2,6 +2,7 @@ package parser
 
 import (
 	"bytes"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strings"
@@ -28,14 +29,18 @@ func TestGoxParse(t *testing.T) {
 				fset := token.NewFileSet()
 				f, err := ParseFile(fset, filepath.Join(goxtestsfolder, name), nil, DeclarationErrors)
 
+				buf := bytes.NewBufferString("\n")
+				ast.Fprint(buf, fset, f, ast.NotNilFilter)
+
+				t.Log(name)
+				t.Log(buf.String())
+
+				fmt.Println(name)
+				fmt.Println(buf.String())
+
 				if err != nil {
 					t.Fatalf("ParseFile(%s): %v", name, err)
 				}
-
-				buf := bytes.NewBufferString("\n")
-				ast.Fprint(buf, fset, f, ast.NotNilFilter)
-				t.Log(buf.String())
-
 			})
 		}
 	}

@@ -1434,6 +1434,7 @@ func (p *parser) checkExpr(x ast.Expr) ast.Expr {
 	case *ast.ParenExpr:
 		panic("unreachable")
 	case *ast.GoxExpr:
+	case *ast.BareWordsExpr:
 	case *ast.SelectorExpr:
 	case *ast.IndexExpr:
 	case *ast.SliceExpr:
