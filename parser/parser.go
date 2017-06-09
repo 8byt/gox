@@ -660,15 +660,11 @@ func (p *parser) parseGoxTag() ast.Expr {
 	var content ast.Expr // tag content
 	content = p.parseRhs()
 
-	//
-	//if p.tok == token.STRING {
-	//	// example goodies
-	//
-	//}
+
 	ctag := p.expect(token.CTAG)
 	p.exprLev--
 
-	return &ast.GoxTagExpr{Otag: otag, X: content, Ctag: ctag}
+	return &ast.GoxExpr{Otag: otag, X: content, Ctag: ctag}
 }
 
 func (p *parser) parseArrayType() ast.Expr {
@@ -1393,7 +1389,7 @@ func (p *parser) checkExpr(x ast.Expr) ast.Expr {
 	case *ast.CompositeLit:
 	case *ast.ParenExpr:
 		panic("unreachable")
-	case *ast.GoxTagExpr:
+	case *ast.GoxExpr:
 	case *ast.SelectorExpr:
 	case *ast.IndexExpr:
 	case *ast.SliceExpr:

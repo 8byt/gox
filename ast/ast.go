@@ -8,10 +8,11 @@
 package ast
 
 import (
-	"github.com/8byt/gox/token"
 	"strings"
 	"unicode"
 	"unicode/utf8"
+
+	"github.com/8byt/gox/token"
 )
 
 // ----------------------------------------------------------------------------
@@ -225,6 +226,7 @@ func (f *FieldList) NumFields() int {
 // An expression is represented by a tree consisting of one
 // or more of the following concrete expression nodes.
 //
+
 type (
 	// A BadExpr node is a placeholder for expressions containing
 	// syntax errors for which no correct expression nodes can be
@@ -270,10 +272,22 @@ type (
 		Rbrace token.Pos // position of "}"
 	}
 
-	GoxTagExpr struct {
-		Otag   token.Pos // position of <|asdf>
-		X      Expr      // expression inside GoxTag
-		Ctag   token.Pos // position of </asdf>
+	BareWordsExpr struct {
+		ValuePos token.Pos
+		Value    string
+	}
+
+	GoxExpr struct {
+		Otag    token.Pos      // position of <
+		TagName *Ident         // div
+		Attrs   []*GoxAttrStmt // props
+		X       []Expr         // expression(s) inside GoxTag or none
+		Ctag    *CtagExpr      // </asdf>
+	}
+
+	CtagExpr struct {
+		Lt    token.Pos // position of "<"
+		Value string    // "</asdf>"
 	}
 
 	// A ParenExpr node represents a parenthesized expression.
@@ -437,7 +451,9 @@ func (x *CompositeLit) Pos() token.Pos {
 	return x.Lbrace
 }
 func (x *ParenExpr) Pos() token.Pos      { return x.Lparen }
-func (x *GoxTagExpr) Pos() token.Pos     { return x.Otag }
+func (x *BareWordsExpr) Pos() token.Pos  { return x.ValuePos }
+func (x *GoxExpr) Pos() token.Pos        { return x.Otag }
+func (x *CtagExpr) Pos() token.Pos       { return x.Lt }
 func (x *SelectorExpr) Pos() token.Pos   { return x.X.Pos() }
 func (x *IndexExpr) Pos() token.Pos      { return x.X.Pos() }
 func (x *SliceExpr) Pos() token.Pos      { return x.X.Pos() }
@@ -471,7 +487,9 @@ func (x *BasicLit) End() token.Pos       { return token.Pos(int(x.ValuePos) + le
 func (x *FuncLit) End() token.Pos        { return x.Body.End() }
 func (x *CompositeLit) End() token.Pos   { return x.Rbrace + 1 }
 func (x *ParenExpr) End() token.Pos      { return x.Rparen + 1 }
-func (x *GoxTagExpr) End() token.Pos     { return x.Ctag + 1 }
+func (x *GoxExpr) End() token.Pos        { return x.Ctag.End() }
+func (x *BareWordsExpr) End() token.Pos  { return token.Pos(int(x.ValuePos) + len(x.Value)) }
+func (x *CtagExpr) End() token.Pos       { return token.Pos(int(x.Lt) + len(x.Value)) }
 func (x *SelectorExpr) End() token.Pos   { return x.Sel.End() }
 func (x *IndexExpr) End() token.Pos      { return x.Rbrack + 1 }
 func (x *SliceExpr) End() token.Pos      { return x.Rbrack + 1 }
@@ -503,7 +521,9 @@ func (*BasicLit) exprNode()       {}
 func (*FuncLit) exprNode()        {}
 func (*CompositeLit) exprNode()   {}
 func (*ParenExpr) exprNode()      {}
-func (*GoxTagExpr) exprNode()     {}
+func (*GoxExpr) exprNode()        {}
+func (*BareWordsExpr) exprNode()  {}
+func (*CtagExpr) exprNode()       {}
 func (*SelectorExpr) exprNode()   {}
 func (*IndexExpr) exprNode()      {}
 func (*SliceExpr) exprNode()      {}
@@ -614,6 +634,12 @@ type (
 		TokPos token.Pos   // position of Tok
 		Tok    token.Token // assignment token, DEFINE
 		Rhs    []Expr
+	}
+
+	// GOX attribute
+	GoxAttrStmt struct {
+		Lhs *Ident
+		Rhs Expr // can be nil
 	}
 
 	// A GoStmt node represents a go statement.
@@ -727,6 +753,7 @@ func (s *ExprStmt) Pos() token.Pos       { return s.X.Pos() }
 func (s *SendStmt) Pos() token.Pos       { return s.Chan.Pos() }
 func (s *IncDecStmt) Pos() token.Pos     { return s.X.Pos() }
 func (s *AssignStmt) Pos() token.Pos     { return s.Lhs[0].Pos() }
+func (s *GoxAttrStmt) Pos() token.Pos    { return s.Lhs.Pos() }
 func (s *GoStmt) Pos() token.Pos         { return s.Go }
 func (s *DeferStmt) Pos() token.Pos      { return s.Defer }
 func (s *ReturnStmt) Pos() token.Pos     { return s.Return }
@@ -756,8 +783,15 @@ func (s *IncDecStmt) End() token.Pos {
 	return s.TokPos + 2 /* len("++") */
 }
 func (s *AssignStmt) End() token.Pos { return s.Rhs[len(s.Rhs)-1].End() }
-func (s *GoStmt) End() token.Pos     { return s.Call.End() }
-func (s *DeferStmt) End() token.Pos  { return s.Call.End() }
+func (s *GoxAttrStmt) End() token.Pos {
+	if s.Rhs == nil {
+		return s.Lhs.End()
+	} else {
+		return s.Rhs.End()
+	}
+}
+func (s *GoStmt) End() token.Pos    { return s.Call.End() }
+func (s *DeferStmt) End() token.Pos { return s.Call.End() }
 func (s *ReturnStmt) End() token.Pos {
 	if n := len(s.Results); n > 0 {
 		return s.Results[n-1].End()
@@ -806,6 +840,7 @@ func (*ExprStmt) stmtNode()       {}
 func (*SendStmt) stmtNode()       {}
 func (*IncDecStmt) stmtNode()     {}
 func (*AssignStmt) stmtNode()     {}
+func (*GoxAttrStmt) stmtNode()    {}
 func (*GoStmt) stmtNode()         {}
 func (*DeferStmt) stmtNode()      {}
 func (*ReturnStmt) stmtNode()     {}
