@@ -30,6 +30,8 @@ func TestOtagParse(t *testing.T) {
 		   hello world<div></div>
 		   <p class="class isn't a reserved keyword">
 		   	yeah that's right
+		   	let's have another line
+		   	and another one
 		   	{<back at it="again"></back>}
 		   	{func () vecty.Component {
 				return <wow></wow>
