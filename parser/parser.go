@@ -18,12 +18,13 @@ package parser
 
 import (
 	"fmt"
-	"github.com/8byt/gox/ast"
-	"github.com/8byt/gox/scanner"
-	"github.com/8byt/gox/token"
 	"strconv"
 	"strings"
 	"unicode"
+
+	"github.com/8byt/gox/ast"
+	"github.com/8byt/gox/scanner"
+	"github.com/8byt/gox/token"
 )
 
 // The parser structure holds the parser's internal state.
@@ -656,15 +657,56 @@ func (p *parser) parseGoxTag() ast.Expr {
 	}
 
 	otag := p.expect(token.OTAG)
-	p.exprLev++          // we're in the expression?
-	var content ast.Expr // tag content
-	content = p.parseRhs()
 
+	tagName := p.parseIdent()
 
-	ctag := p.expect(token.CTAG)
+	attrs := []*ast.GoxAttrStmt{}
+	for p.tok != token.OTAG_END {
+		attrs = append(attrs, p.parseGoxAttr())
+	}
+	p.expect(token.OTAG_END)
+
+	p.exprLev++ // we're in the expression
+
+	var content []ast.Expr // tag contents
+
+	for p.tok != token.CTAG {
+		content = append(content, p.parseRhs())
+	}
+
+	lit := p.lit
+	ctagpos := p.expect(token.CTAG)
+	ctag := &ast.CtagExpr{Lt: ctagpos, Value: lit}
+
 	p.exprLev--
 
-	return &ast.GoxExpr{Otag: otag, X: content, Ctag: ctag}
+	return &ast.GoxExpr{Otag: otag, TagName: tagName, Attrs: attrs, X: content, Ctag: ctag}
+}
+
+func (p *parser) parseGoxAttr() *ast.GoxAttrStmt {
+	if p.trace {
+		defer un(trace(p, "GoxAttrStmt"))
+	}
+
+	lhs := p.parseIdent()
+	if p.tok != token.ASSIGN {
+		return &ast.GoxAttrStmt{Lhs: lhs, Rhs: nil}
+	}
+	p.expect(token.ASSIGN)
+	rhs := p.parseRhs()
+
+	return &ast.GoxAttrStmt{Lhs: lhs, Rhs: rhs}
+}
+
+func (p *parser) parseBareWords() *ast.BareWordsExpr {
+	if p.trace {
+		defer un(trace(p, "BareWordsExpr"))
+	}
+
+	lit := p.lit
+	pos := p.expect(token.BARE_WORDS)
+
+	return &ast.BareWordsExpr{ValuePos: pos, Value: lit}
 }
 
 func (p *parser) parseArrayType() ast.Expr {
@@ -1060,6 +1102,8 @@ func (p *parser) tryIdentOrType() ast.Expr {
 		return &ast.ParenExpr{Lparen: lparen, X: typ, Rparen: rparen}
 	case token.OTAG:
 		return p.parseGoxTag()
+	case token.BARE_WORDS:
+		return p.parseBareWords()
 	}
 
 	// no type found
