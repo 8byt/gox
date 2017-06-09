@@ -735,7 +735,8 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 		lit = s.scanIdentifier()
 		tok = token.IDENT
 	default:
-		s.next()
+		s.next() // TODO make newlines legal in gox-tag mode
+		// that might require making a new .next()...
 		switch ch {
 		case -1:
 			s.error(s.offset, "reached illegal EOF in gox tag")
@@ -743,7 +744,7 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 			tok = token.ASSIGN
 		case '{':
 			tok = token.LBRACE
-			// TODO(danny) Push Go mode onto the stack
+			// push Go mode onto the stack
 			s.goxState = append(s.goxState, StackState{mode: GO, braceDepth: 0})
 		case '"':
 			tok = token.STRING
@@ -755,6 +756,7 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 			s.goxState[len(s.goxState)-1] = StackState{mode: BARE_WORDS}
 		case '/':
 			if s.ch == '>' {
+				// TODO make them supported
 				s.error(s.offset, "self-closing gox tags not supported")
 			}
 		default:
