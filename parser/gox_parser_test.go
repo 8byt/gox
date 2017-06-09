@@ -39,6 +39,7 @@ func TestGoxParse(t *testing.T) {
 				fmt.Println(buf.String())
 
 				if err != nil {
+					fmt.Printf("Failed with error: %v", err)
 					t.Fatalf("ParseFile(%s): %v", name, err)
 				}
 			})

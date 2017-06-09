@@ -676,6 +676,8 @@ func (p *parser) parseGoxTag() ast.Expr {
 			content = append(content, p.parseGoExpr())
 		case token.BARE_WORDS:
 			content = append(content, p.parseBareWords())
+		case token.OTAG:
+			content = append(content, p.parseGoxTag())
 		default:
 			p.error(p.pos, "Unexpected token in gox tag")
 			return nil
