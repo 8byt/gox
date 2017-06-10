@@ -1,0 +1,9 @@
+package main
+
+import "github.com/gopherjs/vecty"
+
+func getHTML() vecty.HTML {
+    return <div></div>
+}
+
+func main() {}
