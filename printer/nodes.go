@@ -15,6 +15,8 @@ import (
 	"unicode"
 	"unicode/utf8"
 
+	"html"
+
 	"github.com/8byt/gox/ast"
 	"github.com/8byt/gox/token"
 )
@@ -887,7 +889,7 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 
 	case *ast.GoxExpr:
 		if p.Mode&GoxToGo != 0 {
-			// TODO(eric)
+			p.expr(goxToVecty(x))
 		} else {
 			// print the gox version instead
 			p.print("<")
@@ -906,7 +908,7 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 
 	case *ast.GoExpr:
 		if p.Mode&GoxToGo != 0 {
-			// TODO(eric)
+			p.expr(x.X)
 		} else {
 			p.print(token.LBRACE)
 			p.expr(x.X)
@@ -915,14 +917,22 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 
 	case *ast.CtagExpr:
 		if p.Mode&GoxToGo != 0 {
-			// TODO(eric)
+			panic("unreachable")
 		} else {
 			p.print(x.Value) // value already contains the </ and > (it's a "hack")
 		}
 
 	case *ast.BareWordsExpr:
 		if p.Mode&GoxToGo != 0 {
-			// TODO(eric)
+			// if the string is just whitespace, just get rid of it
+			unspaced := strings.TrimSpace(x.Value)
+			if len(unspaced) > 0 {
+				// unescape the bare words &nbsp;s and stuff
+				// and then convert it to a go string
+				safe := strconv.Quote(html.UnescapeString(x.Value))
+				p.print(safe)
+			}
+
 		} else {
 			p.print(x.Value) // they're already bare
 		}
