@@ -9,13 +9,14 @@ package parser
 import (
 	"bytes"
 	"errors"
-	"github.com/8byt/gox/ast"
-	"github.com/8byt/gox/token"
 	"io"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/8byt/gox/ast"
+	"github.com/8byt/gox/token"
 )
 
 // If src != nil, readSource converts src to a []byte if possible;

@@ -1,14 +1,15 @@
-package parser
+package printer
 
 import (
-	"bytes"
 	"fmt"
 	"io/ioutil"
-	"path/filepath"
+	"os"
 	"strings"
 	"testing"
 
-	"github.com/8byt/gox/ast"
+	"path/filepath"
+
+	"github.com/8byt/gox/parser"
 	"github.com/8byt/gox/token"
 )
 
@@ -21,22 +22,21 @@ func TestGoxParse(t *testing.T) {
 		t.Fatalf("Unable to read directory: %v", err)
 	}
 
+	cfg := &Config{Mode: GoxToGo}
+
 	for _, fi := range list {
 		name := fi.Name()
 
 		if !fi.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".gox") {
 			t.Run(name, func(t *testing.T) {
 				fset := token.NewFileSet()
-				f, err := ParseFile(fset, filepath.Join(goxTestsDir, name), nil, DeclarationErrors|Trace)
 
-				buf := bytes.NewBufferString("\n")
-				ast.Fprint(buf, fset, f, ast.NotNilFilter)
+				file, err := parser.ParseFile(fset, filepath.Join(goxTestsDir, name), nil, parser.ParseComments)
+				if err != nil {
+					fmt.Println("Can't parse file", err)
+				}
 
-				t.Log(name)
-				t.Log(buf.String())
-
-				fmt.Println(name)
-				fmt.Println(buf.String())
+				cfg.Fprint(os.Stdout, fset, file)
 
 				if err != nil {
 					fmt.Printf("Failed with error: %v", err)

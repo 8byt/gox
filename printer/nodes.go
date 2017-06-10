@@ -886,29 +886,46 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 		p.expr(x.Value)
 
 	case *ast.GoxExpr:
-		p.print("<")
-		p.expr(x.TagName)
-		// Print expressions
-		for _, v := range x.Attrs {
-			p.print(blank)
-			p.stmt(v, false)
+		if p.Mode&GoxToGo != 0 {
+			// TODO(eric)
+		} else {
+			// print the gox version instead
+			p.print("<")
+			p.expr(x.TagName)
+			// Print expressions
+			for _, v := range x.Attrs {
+				p.print(blank)
+				p.stmt(v, false)
+			}
+			p.print(">")
+			for _, v := range x.X {
+				p.expr(v)
+			}
+			p.expr(x.Ctag)
 		}
-		p.print(">")
-		for _, v := range x.X {
-			p.expr(v)
-		}
-		p.expr(x.Ctag)
 
 	case *ast.GoExpr:
-		p.print(token.LBRACE)
-		p.expr(x.X)
-		p.print(token.RBRACE)
+		if p.Mode&GoxToGo != 0 {
+			// TODO(eric)
+		} else {
+			p.print(token.LBRACE)
+			p.expr(x.X)
+			p.print(token.RBRACE)
+		}
 
 	case *ast.CtagExpr:
-		p.print(x.Value) // value already contains the </ and > (it's a "hack")
+		if p.Mode&GoxToGo != 0 {
+			// TODO(eric)
+		} else {
+			p.print(x.Value) // value already contains the </ and > (it's a "hack")
+		}
 
 	case *ast.BareWordsExpr:
-		p.print(x.Value) // they're already bare
+		if p.Mode&GoxToGo != 0 {
+			// TODO(eric)
+		} else {
+			p.print(x.Value) // they're already bare
+		}
 
 	default:
 		panic("unreachable")
@@ -1290,11 +1307,16 @@ func (p *printer) stmt(stmt ast.Stmt, nextIsRBrace bool) {
 		p.expr(stripParens(s.X))
 		p.print(blank)
 		p.block(s.Body, 1)
+
 	case *ast.GoxAttrStmt:
-		p.expr(s.Lhs)
-		if s.Rhs != nil {
-			p.print(token.ASSIGN)
-			p.expr(s.Rhs)
+		if p.Mode&GoxToGo != 0 {
+			// TODO(eric)
+		} else {
+			p.expr(s.Lhs)
+			if s.Rhs != nil {
+				p.print(token.ASSIGN)
+				p.expr(s.Rhs)
+			}
 		}
 
 	default:
