@@ -22,7 +22,8 @@ func rename() {
 
 	r := &Renamer{"Foo", "Bar"}
 	ast.Walk(r, file)
-	printer.Config{Mode: printer.GoxToGo}.Fprint(os.Stdout, fs, file)
+	cfg := &printer.Config{Mode: printer.GoxToGo}
+	cfg.Fprint(os.Stdout, fs, file)
 }
 
 type Renamer struct {

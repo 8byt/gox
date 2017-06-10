@@ -10,13 +10,13 @@ import (
 )
 
 func goxToVecty(gox *ast.GoxExpr) ast.Node {
-	isComponent := unicode.IsUpper(gox.TagName.Name[0])
+	isComponent := unicode.IsUpper(rune(gox.TagName.Name[0]))
 
 	if isComponent {
 		return ast.NewIdent("COMPONENT")
 	} else {
 		args := []ast.Expr{
-			ast.BasicLit{
+			&ast.BasicLit{
 				Kind:  token.STRING,
 				Value: strconv.Quote(gox.TagName.Name),
 			}}
@@ -24,15 +24,15 @@ func goxToVecty(gox *ast.GoxExpr) ast.Node {
 		// Add the attributes
 		for _, attr := range gox.Attrs {
 			expr := ast.CallExpr{
-				Fun: ast.SelectorExpr{X: ast.NewIdent("vecty"), Sel: ast.NewIdent("Attribute")},
+				Fun: &ast.SelectorExpr{X: ast.NewIdent("vecty"), Sel: ast.NewIdent("Attribute")},
 				Args: []ast.Expr{
-					ast.BasicLit{Kind: token.STRING,
+					&ast.BasicLit{Kind: token.STRING,
 						Value: strconv.Quote(attr.Lhs.Name)},
 					attr.Rhs,
 				},
 			}
 
-			args = append(args, expr)
+			args = append(args, &expr)
 		}
 
 		// Add the contents
@@ -40,10 +40,12 @@ func goxToVecty(gox *ast.GoxExpr) ast.Node {
 			args = append(args, expr)
 		}
 
-		selector := ast.SelectorExpr{
+		selector := &ast.SelectorExpr{
 			X:   ast.NewIdent("vecty"),
 			Sel: ast.NewIdent("Tag")}
 
-		return ast.CallExpr{Fun: selector, Args: args}
+		return &ast.CallExpr{Fun: selector, Args: args}
 	}
 }
+
+func newSelectorExpr() {}
