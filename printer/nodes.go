@@ -897,7 +897,7 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 		for _, v := range x.X {
 			p.expr(v)
 		}
-		p.print(x.Ctag.Value)
+		p.expr(x.Ctag)
 
 	case *ast.GoExpr:
 		p.print(token.LBRACE)
@@ -905,10 +905,10 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 		p.print(token.RBRACE)
 
 	case *ast.CtagExpr:
-		p.print("ctag " + x.Value)
+		p.print(x.Value) // value already contains the </ and > (it's a "hack")
 
 	case *ast.BareWordsExpr:
-		p.print(x.Value)
+		p.print(x.Value) // they're already bare
 
 	default:
 		panic("unreachable")
