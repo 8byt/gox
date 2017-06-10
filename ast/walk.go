@@ -206,9 +206,6 @@ func Walk(v Visitor, node Node) {
 		walkExprList(v, n.Lhs)
 		walkExprList(v, n.Rhs)
 
-	case *GoStmt:
-		Walk(v, n.Call)
-
 	case *DeferStmt:
 		Walk(v, n.Call)
 
@@ -359,6 +356,35 @@ func Walk(v Visitor, node Node) {
 		for _, f := range n.Files {
 			Walk(v, f)
 		}
+
+	// gox expressions
+	case *GoxExpr:
+		Walk(v, n.TagName)
+		// have to convert these into Stmts
+		var converted []Stmt
+		for _, attr := range n.Attrs {
+			converted = append(converted, Stmt(attr))
+		}
+		walkStmtList(v, converted)
+		walkExprList(v, n.X)
+		Walk(v, n.Ctag)
+
+	case *GoExpr:
+		Walk(v, n.X)
+
+	case *CtagExpr:
+		// pass
+
+	case *BareWordsExpr:
+		// pass
+
+	// gox statements
+	case *GoxAttrStmt:
+		Walk(v, n.Lhs)
+		Walk(v, n.Rhs)
+
+	case *GoStmt:
+		Walk(v, n.Call)
 
 	default:
 		panic(fmt.Sprintf("ast.Walk: unexpected node type %T", n))
