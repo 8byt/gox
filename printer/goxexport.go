@@ -9,7 +9,7 @@ import (
 	"github.com/8byt/gox/token"
 )
 
-func goxToVecty(gox *ast.GoxExpr) ast.Node {
+func goxToVecty(gox *ast.GoxExpr) ast.Expr {
 	isComponent := unicode.IsUpper(rune(gox.TagName.Name[0]))
 
 	if isComponent {
