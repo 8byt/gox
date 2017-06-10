@@ -8,8 +8,11 @@ type PropsComponent struct {
 
 func (b *PropsComponent) Render() *vecty.HTML {
     return <div props="dot" props={"." + "props"} empty>
-        now introducing: props
         <h1>Holy shit it worked</h1>
+        now introducing: props
+        <h2>gox is JSX for Go</h2>
+        <p>why?</p>
+        <i>why not?</i>
     </div>
 }
 
