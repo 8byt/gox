@@ -886,18 +886,24 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 		p.expr(x.Value)
 
 	case *ast.GoxExpr:
-		p.print("<")
-		p.expr(x.TagName)
-		// Print expressions
-		for _, v := range x.Attrs {
-			p.print(blank)
-			p.stmt(v, false)
+		// transform gox to Go
+
+		if p.Mode&GoxToGo != 0 {
+
+		} else {
+			p.print("<")
+			p.expr(x.TagName)
+			// Print expressions
+			for _, v := range x.Attrs {
+				p.print(blank)
+				p.stmt(v, false)
+			}
+			p.print(">")
+			for _, v := range x.X {
+				p.expr(v)
+			}
+			p.expr(x.Ctag)
 		}
-		p.print(">")
-		for _, v := range x.X {
-			p.expr(v)
-		}
-		p.expr(x.Ctag)
 
 	case *ast.GoExpr:
 		p.print(token.LBRACE)

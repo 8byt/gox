@@ -12,11 +12,11 @@ import (
 	"github.com/8byt/gox/token"
 )
 
-const goxtestsfolder = "goxtests"
+const goxTestsDir = "../goxtests"
 
-// TestGoxParse verifies that Gox can parse
+// TestGoxParse verifies that gox can parse
 func TestGoxParse(t *testing.T) {
-	list, err := ioutil.ReadDir(goxtestsfolder)
+	list, err := ioutil.ReadDir(goxTestsDir)
 	if err != nil {
 		t.Fatalf("Unable to read directory: %v", err)
 	}
@@ -27,7 +27,7 @@ func TestGoxParse(t *testing.T) {
 		if !fi.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".gox") {
 			t.Run(name, func(t *testing.T) {
 				fset := token.NewFileSet()
-				f, err := ParseFile(fset, filepath.Join(goxtestsfolder, name), nil, DeclarationErrors|Trace)
+				f, err := ParseFile(fset, filepath.Join(goxTestsDir, name), nil, DeclarationErrors|Trace)
 
 				buf := bytes.NewBufferString("\n")
 				ast.Fprint(buf, fset, f, ast.NotNilFilter)

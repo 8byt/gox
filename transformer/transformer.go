@@ -13,7 +13,7 @@ import (
 
 func rename() {
 	fs := token.NewFileSet()
-	file, err := parser.ParseFile(fs, "../parser/goxtests/args_and_more.gox", nil, parser.ParseComments)
+	file, err := parser.ParseFile(fs, "../goxtests/args_and_more.gox", nil, parser.ParseComments)
 	if err != nil {
 		fmt.Println("Can't parse file", err)
 	}
@@ -22,8 +22,7 @@ func rename() {
 
 	r := &Renamer{"Foo", "Bar"}
 	ast.Walk(r, file)
-
-	printer.Fprint(os.Stdout, fs, file)
+	printer.Config{Mode: printer.GoxToGo}.Fprint(os.Stdout, fs, file)
 }
 
 type Renamer struct {
