@@ -924,15 +924,10 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 
 	case *ast.BareWordsExpr:
 		if p.Mode&GoxToGo != 0 {
-			// if the string is just whitespace, just get rid of it
-			unspaced := strings.TrimSpace(x.Value)
-			if len(unspaced) > 0 {
-				// unescape the bare words &nbsp;s and stuff
-				// and then convert it to a go string
-				safe := strconv.Quote(html.UnescapeString(x.Value))
-				p.print(safe)
-			}
-
+			// unescape the bare words &nbsp;s and stuff
+			// and then convert it to a go string
+			safe := strconv.Quote(html.UnescapeString(x.Value))
+			p.print(safe)
 		} else {
 			p.print(x.Value) // they're already bare
 		}
