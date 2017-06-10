@@ -13,7 +13,7 @@ import (
 
 func rename() {
 	fs := token.NewFileSet()
-	file, err := parser.ParseFile(fs, "../parser/goxtests/1_bare_content.gox", nil, 0)
+	file, err := parser.ParseFile(fs, "../parser/goxtests/args_and_more.gox", nil, 0)
 	if err != nil {
 		fmt.Println("Can't parse file", err)
 	}

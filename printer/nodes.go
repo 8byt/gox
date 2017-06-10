@@ -898,11 +898,11 @@ func (p *printer) expr1(expr ast.Expr, prec1, depth int) {
 			p.expr(v)
 		}
 		p.print(x.Ctag.Value)
-		//p.print(token.DEFINE)
-		//p.exprList(x.X)
-		//p.expr(x.Attrs)
+
 	case *ast.GoExpr:
+		p.print(token.LBRACE)
 		p.expr(x.X)
+		p.print(token.RBRACE)
 
 	case *ast.CtagExpr:
 		p.print("ctag " + x.Value)
