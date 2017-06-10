@@ -5,6 +5,8 @@ import (
 
 	"unicode"
 
+	"strings"
+
 	"github.com/8byt/gox/ast"
 	"github.com/8byt/gox/token"
 )
@@ -23,32 +25,45 @@ func goxToVecty(gox *ast.GoxExpr) ast.Expr {
 
 		// Add the attributes
 		for _, attr := range gox.Attrs {
-			expr := ast.CallExpr{
-				Fun: newSelectorExpr("vecty", "Attribute"),
-				Args: []ast.Expr{
+			expr := newCallExpr(
+				newSelectorExpr("vecty", "Attribute"),
+				[]ast.Expr{
 					&ast.BasicLit{Kind: token.STRING,
 						Value: strconv.Quote(attr.Lhs.Name)},
 					attr.Rhs,
 				},
-				Ellipsis: token.NoPos, Lparen: token.NoPos, Rparen: token.NoPos,
-			}
+			)
 
-			args = append(args, &expr)
+			args = append(args, expr)
 		}
 
 		// Add the contents
 		for _, expr := range gox.X {
-			switch expr.(type) {
-
+			switch expr := expr.(type) {
+			//case *ast.GoExpr:
+			//	e := newCallExpr(
+			//		newSelectorExpr("vecty", "Text"),
+			//		[]ast.Expr{expr},
+			//	)
+			//	args = append(args, e)
+			case *ast.BareWordsExpr:
+				if len(strings.TrimSpace(expr.Value)) == 0 {
+					continue
+				}
+				e := newCallExpr(
+					newSelectorExpr("vecty", "Text"),
+					[]ast.Expr{expr},
+				)
+				args = append(args, e)
 			default:
 				args = append(args, expr)
 			}
 		}
 
-		return &ast.CallExpr{
-			Fun:      newSelectorExpr("vecty", "Tag"),
-			Args:     args,
-			Ellipsis: token.NoPos, Lparen: token.NoPos, Rparen: token.NoPos}
+		return newCallExpr(
+			newSelectorExpr("vecty", "Tag"),
+			args,
+		)
 	}
 }
 
@@ -56,4 +71,11 @@ func newSelectorExpr(x, sel string) *ast.SelectorExpr {
 	return &ast.SelectorExpr{
 		X:   ast.NewIdent(x),
 		Sel: ast.NewIdent(sel)}
+}
+
+func newCallExpr(fun ast.Expr, args []ast.Expr) *ast.CallExpr {
+	return &ast.CallExpr{
+		Fun:      fun,
+		Args:     args,
+		Ellipsis: token.NoPos, Lparen: token.NoPos, Rparen: token.NoPos}
 }
