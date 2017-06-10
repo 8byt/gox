@@ -2,10 +2,9 @@ package printer
 
 import (
 	"strconv"
+	"strings"
 
 	"unicode"
-
-	"strings"
 
 	"github.com/8byt/gox/ast"
 	"github.com/8byt/gox/token"
@@ -25,12 +24,17 @@ func goxToVecty(gox *ast.GoxExpr) ast.Expr {
 
 		// Add the attributes
 		for _, attr := range gox.Attrs {
+			actualRhs := attr.Rhs
+			if attr.Rhs == nil { // default to true like JSX
+				actualRhs = ast.NewIdent("true")
+			}
 			expr := newCallExpr(
 				newSelectorExpr("vecty", "Attribute"),
 				[]ast.Expr{
-					&ast.BasicLit{Kind: token.STRING,
+					&ast.BasicLit{
+						Kind:  token.STRING,
 						Value: strconv.Quote(attr.Lhs.Name)},
-					attr.Rhs,
+					actualRhs,
 				},
 			)
 
@@ -40,6 +44,10 @@ func goxToVecty(gox *ast.GoxExpr) ast.Expr {
 		// Add the contents
 		for _, expr := range gox.X {
 			switch expr := expr.(type) {
+			// TODO figure out what's a better thing to do here
+			// do we want to error on compile or figure out what to do based on context?
+			// (I think the latter)
+			// Fallback to regular behavior, don't wrap this yet
 			//case *ast.GoExpr:
 			//	e := newCallExpr(
 			//		newSelectorExpr("vecty", "Text"),
