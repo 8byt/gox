@@ -6,7 +6,7 @@ func asAnArg(arg *vecty.HTML) *vecty.HTML {
     return arg
 }
 
-func oohBoy() vecty.Component {
+func oohBoy() *vecty.HTML {
     header := <h1>Hello</h1>
     content := <p>paragraphs</p>
 

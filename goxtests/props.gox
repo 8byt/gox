@@ -2,8 +2,22 @@ package components
 
 import "github.com/gopherjs/vecty"
 
-func propsTest() *vecty.HTML {
+type PropsComponent struct {
+	vecty.Core
+}
+
+func (b *PropsComponent) Render() *vecty.HTML {
     return <div props="dot" props={"." + "props"} empty>
         now introducing: props
     </div>
+}
+
+type BodyComponent struct {
+	vecty.Core
+}
+
+func (b *BodyComponent) Render() *vecty.HTML {
+    return <body>
+        <PropsComponent></PropsComponent>
+    </body>
 }

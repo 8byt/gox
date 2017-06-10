@@ -14,7 +14,31 @@ func goxToVecty(gox *ast.GoxExpr) ast.Expr {
 	isComponent := unicode.IsUpper(rune(gox.TagName.Name[0]))
 
 	if isComponent {
-		return ast.NewIdent("COMPONENT")
+		var args []ast.Expr
+		for _, attr := range gox.Attrs {
+			actualRhs := attr.Rhs
+			if attr.Rhs == nil { // default to true like JSX
+				actualRhs = ast.NewIdent("true")
+			}
+			expr := &ast.KeyValueExpr{
+				Key:   ast.NewIdent(attr.Lhs.Name),
+				Colon: token.NoPos,
+				Value: actualRhs,
+			}
+
+			args = append(args, expr)
+		}
+
+		return &ast.UnaryExpr{
+			OpPos: token.NoPos,
+			Op:    token.AND,
+			X: &ast.CompositeLit{
+				Type:   ast.NewIdent(gox.TagName.Name),
+				Lbrace: token.NoPos,
+				Elts:   args,
+				Rbrace: token.NoPos,
+			},
+		}
 	} else {
 		args := []ast.Expr{
 			&ast.BasicLit{

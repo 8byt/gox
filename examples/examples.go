@@ -1,17 +1,14 @@
-package examples
+package main
 
 import (
-	"github.com/gopherjs/vecty"
-	"github.com/gopherjs/vecty/examples/todomvc/store"
 	"github.com/8byt/gox/goxtests_gen"
+	"github.com/gopherjs/gopherjs/js"
+	"github.com/gopherjs/vecty"
 )
 
 func main() {
 	vecty.SetTitle("gox lang")
-	p := &components.FilterButton{}
-	store.Listeners.Add(p, func() {
-		p.Items = store.Items
-		vecty.Rerender(p)
-	})
+	p := &components.BodyComponent{}
 	vecty.RenderBody(p)
+	js.Global.Get("console").Call("log", "dang")
 }
