@@ -9,8 +9,8 @@ package printer
 
 import (
 	"bytes"
-	"go/ast"
-	"go/parser"
+	"github.com/8byt/gox/ast"
+	"github.com/8byt/gox/parser"
 	"io"
 	"io/ioutil"
 	"log"

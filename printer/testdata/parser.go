@@ -11,9 +11,9 @@ package parser
 
 import (
 	"fmt"
-	"go/ast"
+	"github.com/8byt/gox/ast"
 	"go/scanner"
-	"go/token"
+	"github.com/8byt/gox/token"
 )
 
 // The mode parameter to the Parse* functions is a set of flags (or 0).
@@ -376,7 +376,7 @@ func (p *parser) expectSemi() {
 
 func assert(cond bool, msg string) {
 	if !cond {
-		panic("go/parser internal error: " + msg)
+		panic("github.com/8byt/gox/parser internal error: " + msg)
 	}
 }
 

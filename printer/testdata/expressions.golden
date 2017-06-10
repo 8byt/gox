@@ -671,7 +671,7 @@ func _() {
 }
 
 // Literal function types in conversions must be parenthesized;
-// for now go/parser accepts the unparenthesized form where it
+// for now github.com/8byt/gox/parser accepts the unparenthesized form where it
 // is non-ambiguous.
 func _() {
 	// these conversions should be rewritten to look

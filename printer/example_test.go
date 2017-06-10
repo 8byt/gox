@@ -7,12 +7,13 @@ package printer_test
 import (
 	"bytes"
 	"fmt"
-	"go/ast"
-	"go/parser"
-	"go/printer"
-	"go/token"
 	"strings"
 	"testing"
+
+	"github.com/8byt/gox/ast"
+	"github.com/8byt/gox/parser"
+	"github.com/8byt/gox/printer"
+	"github.com/8byt/gox/token"
 )
 
 // Dummy test function so that godoc does not use the entire file as example.

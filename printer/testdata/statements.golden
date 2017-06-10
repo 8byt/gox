@@ -477,7 +477,7 @@ func _() {
 
 	// Each use(x) call below should have at most one empty line before and after.
 	// Known bug: The first use call may have more than one empty line before
-	//            (see go/printer/nodes.go, func linebreak).
+	//            (see github.com/8byt/gox/printer/nodes.go, func linebreak).
 
 	use(x)
 
@@ -591,7 +591,7 @@ func _() {
 	}
 L:	// A comment on the same line as the label, followed by a single empty line.
 	// Known bug: There may be more than one empty line before MoreCode()
-	//            (see go/printer/nodes.go, func linebreak).
+	//            (see github.com/8byt/gox/printer/nodes.go, func linebreak).
 
 	MoreCode()
 }

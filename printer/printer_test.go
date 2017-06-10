@@ -9,9 +9,9 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"go/ast"
-	"go/parser"
-	"go/token"
+	"github.com/8byt/gox/ast"
+	"github.com/8byt/gox/parser"
+	"github.com/8byt/gox/token"
 	"io"
 	"io/ioutil"
 	"path/filepath"
@@ -369,7 +369,7 @@ func identCount(f *ast.File) int {
 func TestSourcePos(t *testing.T) {
 	const src = `
 package p
-import ( "go/printer"; "math" )
+import ( "github.com/8byt/gox/printer"; "math" )
 const pi = 3.14; var x = 0
 type t struct{ x, y, z int; u, v, w float32 }
 func (t *t) foo(a, b, c int) int {
@@ -531,7 +531,7 @@ func TestBaseIndent(t *testing.T) {
 }
 
 // TestFuncType tests that an ast.FuncType with a nil Params field
-// can be printed (per go/ast specification). Test case for issue 3870.
+// can be printed (per github.com/8byt/gox/ast specification). Test case for issue 3870.
 func TestFuncType(t *testing.T) {
 	src := &ast.File{
 		Name: &ast.Ident{Name: "p"},
