@@ -698,6 +698,11 @@ func (s *Scanner) scanBareWordsMode() (pos token.Pos, tok token.Token, lit strin
 				s.error(s.offset, err.Error())
 				tok = token.ILLEGAL
 			}
+			// insert semi if we've popped into go mode
+			// (needed for "asdf := <div></div>" lines)
+			if s.goxState.mode == GO {
+				s.insertSemi = true
+			}
 		case isLetter(s.ch) == true:
 			tok = token.OTAG
 			// push gox-tag

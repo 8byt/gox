@@ -1,14 +1,14 @@
-package main
+package components
 
 import "github.com/gopherjs/vecty"
 
-func asAnArg(arg *vecty.Component) vecty.Component {
+func asAnArg(arg *vecty.HTML) *vecty.HTML {
     return arg
 }
 
 func oohBoy() vecty.Component {
-    header := withMore()
-    content := nowWithProps()
+    header := <h1>Hello</h1>
+    content := <p>paragraphs</p>
 
     // hello world I'm a comment
     return <div class="content">

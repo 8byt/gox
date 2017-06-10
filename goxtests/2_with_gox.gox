@@ -1,7 +1,7 @@
-package main
+package components
 
 import "github.com/gopherjs/vecty"
 
-func main () vecty.Component {
+func nestedComponents() *vecty.HTML {
     return <div><h1>A Whole New Go</h1></div>
 }

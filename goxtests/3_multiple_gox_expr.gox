@@ -1,8 +1,8 @@
-package main
+package components
 
 import "github.com/gopherjs/vecty"
 
-func main () vecty.Component {
+func nestedMore() *vecty.HTML {
     return <div class="classy">
         <blink>Netscape era</blink>
         <marquee>         where is it</marquee>

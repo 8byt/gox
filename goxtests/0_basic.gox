@@ -1,7 +1,7 @@
-package main
+package components
 
 import "github.com/gopherjs/vecty"
 
-func main () vecty.Component {
+func divs() *vecty.HTML {
     return <div></div>
 }

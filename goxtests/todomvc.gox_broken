@@ -1,0 +1,38 @@
+package components
+
+import (
+	"github.com/gopherjs/vecty"
+	"github.com/gopherjs/vecty/elem"
+	"github.com/gopherjs/vecty/event"
+	"github.com/gopherjs/vecty/examples/todomvc/actions"
+	"github.com/gopherjs/vecty/examples/todomvc/dispatcher"
+	"github.com/gopherjs/vecty/examples/todomvc/store"
+	"github.com/gopherjs/vecty/examples/todomvc/store/model"
+	"github.com/gopherjs/vecty/prop"
+)
+
+// FilterButton is a vecty.Component which allows the user to select a filter
+// state.
+type FilterButton struct {
+	vecty.Core
+
+	Label  string
+	Filter model.FilterState
+}
+
+func (b *FilterButton) onClick(event *vecty.Event) {
+	dispatcher.Dispatch(&actions.SetFilter{
+		Filter: b.Filter,
+	})
+
+	event.PreventDefault()
+}
+
+// Render implements the vecty.Component interface.
+func (b *FilterButton) Render() *vecty.HTML {
+    return <li>
+        <a class={store.Filter == b.Filter} href="#" onClick={b.onClick}>
+            {b.Label}
+        </a>
+    </li>
+}

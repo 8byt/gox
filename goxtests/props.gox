@@ -1,7 +1,9 @@
-package main
+package components
 
 import "github.com/gopherjs/vecty"
 
-func main () vecty.Component {
-    return <div props="dot" props={"." + "props"} empty>now introducing: props</div>
+func propsTest() *vecty.HTML {
+    return <div props="dot" props={"." + "props"} empty>
+        now introducing: props
+    </div>
 }
