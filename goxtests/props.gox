@@ -1,9 +1,14 @@
 package components
 
-import "github.com/gopherjs/vecty"
+import (
+    "strconv"
+    "github.com/gopherjs/vecty"
+)
 
 type PropsComponent struct {
 	vecty.Core
+	name string
+	other int
 }
 
 func (b *PropsComponent) Render() *vecty.HTML {
@@ -13,6 +18,8 @@ func (b *PropsComponent) Render() *vecty.HTML {
         <h2>gox is JSX for Go</h2>
         <p>why?</p>
         <i>why not?</i>
+        <div>{vecty.Text(b.name)}</div>
+        {vecty.Text(strconv.Itoa(b.other + 10))}
     </div>
 }
 
@@ -22,6 +29,6 @@ type BodyComponent struct {
 
 func (b *BodyComponent) Render() *vecty.HTML {
     return <body>
-        <PropsComponent></PropsComponent>
+        <PropsComponent name="hello" other={123}></PropsComponent>
     </body>
 }

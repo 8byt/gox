@@ -78,6 +78,7 @@ func goxToVecty(gox *ast.GoxExpr) ast.Expr {
 			//		[]ast.Expr{expr},
 			//	)
 			//	args = append(args, e)
+
 			case *ast.BareWordsExpr:
 				if len(strings.TrimSpace(expr.Value)) == 0 {
 					continue
