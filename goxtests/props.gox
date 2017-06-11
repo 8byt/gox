@@ -30,7 +30,10 @@ type BodyComponent struct {
 
 func (b *BodyComponent) Render() *vecty.HTML {
     return <body>
-        <PropsComponent name="hello" other={123}></PropsComponent>
+        <PropsComponent
+            name="hello"
+            other={123}>
+        </PropsComponent>
         <ButtonComponent></ButtonComponent>
     </body>
 }
