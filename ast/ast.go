@@ -282,7 +282,7 @@ type (
 		TagName *Ident         // div
 		Attrs   []*GoxAttrStmt // props
 		X       []Expr         // expression(s) inside GoxTag or none
-		Ctag    *CtagExpr      // </asdf>
+		Ctag    *CtagExpr      // </asdf> or />
 	}
 
 	GoExpr struct {
@@ -292,8 +292,8 @@ type (
 	}
 
 	CtagExpr struct {
-		Lt    token.Pos // position of "<"
-		Value string    // "</asdf>"
+		Close token.Pos // position of "<" or "/"
+		Value string    // "</asdf>" or "/>"
 	}
 
 	// A ParenExpr node represents a parenthesized expression.
@@ -460,7 +460,7 @@ func (x *ParenExpr) Pos() token.Pos      { return x.Lparen }
 func (x *BareWordsExpr) Pos() token.Pos  { return x.ValuePos }
 func (x *GoxExpr) Pos() token.Pos        { return x.Otag }
 func (x *GoExpr) Pos() token.Pos         { return x.Lbrace }
-func (x *CtagExpr) Pos() token.Pos       { return x.Lt }
+func (x *CtagExpr) Pos() token.Pos       { return x.Close }
 func (x *SelectorExpr) Pos() token.Pos   { return x.X.Pos() }
 func (x *IndexExpr) Pos() token.Pos      { return x.X.Pos() }
 func (x *SliceExpr) Pos() token.Pos      { return x.X.Pos() }
@@ -497,7 +497,7 @@ func (x *ParenExpr) End() token.Pos      { return x.Rparen + 1 }
 func (x *GoxExpr) End() token.Pos        { return x.Ctag.End() }
 func (x *GoExpr) End() token.Pos         { return x.Rbrace }
 func (x *BareWordsExpr) End() token.Pos  { return token.Pos(int(x.ValuePos) + len(x.Value)) }
-func (x *CtagExpr) End() token.Pos       { return token.Pos(int(x.Lt) + len(x.Value)) }
+func (x *CtagExpr) End() token.Pos       { return token.Pos(int(x.Close) + len(x.Value)) }
 func (x *SelectorExpr) End() token.Pos   { return x.Sel.End() }
 func (x *IndexExpr) End() token.Pos      { return x.Rbrack + 1 }
 func (x *SliceExpr) End() token.Pos      { return x.Rbrack + 1 }

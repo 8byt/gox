@@ -32,9 +32,8 @@ func (b *BodyComponent) Render() *vecty.HTML {
     return <body>
         <PropsComponent
             name="hello"
-            other={123}>
-        </PropsComponent>
-        <ButtonComponent></ButtonComponent>
+            other={123}/>
+        <ButtonComponent/>
     </body>
 }
 

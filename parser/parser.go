@@ -661,8 +661,21 @@ func (p *parser) parseGoxTag() ast.Expr {
 	tagName := p.parseIdent()
 
 	attrs := []*ast.GoxAttrStmt{}
-	for p.tok != token.OTAG_END {
+	for p.tok != token.OTAG_END && p.tok != token.OTAG_SELF_CLOSE {
 		attrs = append(attrs, p.parseGoxAttr())
+	}
+	// if a self closing tag, close
+	if p.tok == token.OTAG_SELF_CLOSE {
+		lit := p.lit
+		ctagpos := p.expect(token.OTAG_SELF_CLOSE)
+		return &ast.GoxExpr{
+			Otag: otag, TagName: tagName,
+			Attrs: attrs, X: nil,
+			Ctag: &ast.CtagExpr{
+				Close: ctagpos,
+				Value: lit,
+			},
+		}
 	}
 	p.expect(token.OTAG_END)
 
@@ -686,7 +699,7 @@ func (p *parser) parseGoxTag() ast.Expr {
 
 	lit := p.lit
 	ctagpos := p.expect(token.CTAG)
-	ctag := &ast.CtagExpr{Lt: ctagpos, Value: lit}
+	ctag := &ast.CtagExpr{Close: ctagpos, Value: lit}
 
 	p.exprLev--
 

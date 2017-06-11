@@ -30,10 +30,11 @@ const (
 	STRING // "abc"
 
 	// gox tokens
-	OTAG       // <div
-	OTAG_END   // >
-	CTAG       // </div>
-	BARE_WORDS // This is inside a tag
+	OTAG            // <div
+	OTAG_END        // >
+	OTAG_SELF_CLOSE // />
+	CTAG            // </div>
+	BARE_WORDS      // This is inside a tag
 
 	literal_end
 
@@ -144,10 +145,11 @@ var tokens = [...]string{
 	STRING: "STRING",
 
 	// gox tokens
-	OTAG:       "OTAG",
-	OTAG_END:   "OTAG_END",
-	CTAG:       "CTAG",
-	BARE_WORDS: "BARE_WORDS",
+	OTAG:            "OTAG",
+	OTAG_END:        "OTAG_END",
+	OTAG_SELF_CLOSE: "OTAG_SELF_CLOSE",
+	CTAG:            "CTAG",
+	BARE_WORDS:      "BARE_WORDS",
 
 	ADD: "+",
 	SUB: "-",

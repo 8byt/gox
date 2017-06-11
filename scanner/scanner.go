@@ -770,8 +770,13 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 
 		case '/':
 			if s.ch == '>' {
+				s.next()
 				// TODO make them supported
-				s.error(s.offset, "self-closing gox tags not supported")
+				tok = token.OTAG_SELF_CLOSE
+				err := s.goxState.pop()
+				if err != nil {
+					s.error(s.offset, err.Error())
+				}
 			}
 		default:
 			// next reports unexpected BOMs - don't repeat
