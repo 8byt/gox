@@ -52,15 +52,42 @@ func goxToVecty(gox *ast.GoxExpr) ast.Expr {
 			if attr.Rhs == nil { // default to true like JSX
 				actualRhs = ast.NewIdent("true")
 			}
-			expr := newCallExpr(
-				newSelectorExpr("vecty", "Attribute"),
-				[]ast.Expr{
-					&ast.BasicLit{
-						Kind:  token.STRING,
-						Value: strconv.Quote(attr.Lhs.Name)},
-					actualRhs,
-				},
-			)
+			var expr ast.Expr
+			if attr.Lhs.Name == "onClick" { // TODO(danny) not this
+				expr = &ast.UnaryExpr{
+					OpPos: token.NoPos,
+					Op:    token.AND,
+					X: &ast.CompositeLit{
+						Type:   newSelectorExpr("vecty", "EventListener"),
+						Lbrace: token.NoPos,
+						Elts: []ast.Expr{
+							&ast.KeyValueExpr{
+								Key: ast.NewIdent("Name"),
+								Value: &ast.BasicLit{
+									Kind:  token.STRING,
+									Value: strconv.Quote("click"),
+								},
+							},
+							&ast.KeyValueExpr{
+								Key:   ast.NewIdent("Listener"),
+								Value: attr.Rhs,
+							},
+						},
+						Rbrace: token.NoPos,
+					},
+				}
+
+			} else {
+				expr = newCallExpr(
+					newSelectorExpr("vecty", "Attribute"),
+					[]ast.Expr{
+						&ast.BasicLit{
+							Kind:  token.STRING,
+							Value: strconv.Quote(attr.Lhs.Name)},
+						actualRhs,
+					},
+				)
+			}
 
 			args = append(args, expr)
 		}
