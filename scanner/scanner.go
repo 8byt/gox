@@ -777,6 +777,7 @@ func (s *Scanner) scanGoxTagMode() (pos token.Pos, tok token.Token, lit string) 
 				if err != nil {
 					s.error(s.offset, err.Error())
 				}
+				s.insertSemi = true
 			}
 		default:
 			// next reports unexpected BOMs - don't repeat

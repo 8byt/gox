@@ -2,13 +2,10 @@ package components
 
 import (
 	"github.com/gopherjs/vecty"
-	"github.com/gopherjs/vecty/elem"
-	"github.com/gopherjs/vecty/event"
 	"github.com/gopherjs/vecty/examples/todomvc/actions"
 	"github.com/gopherjs/vecty/examples/todomvc/dispatcher"
 	"github.com/gopherjs/vecty/examples/todomvc/store"
 	"github.com/gopherjs/vecty/examples/todomvc/store/model"
-	"github.com/gopherjs/vecty/prop"
 )
 
 // FilterButton is a vecty.Component which allows the user to select a filter
@@ -25,7 +22,7 @@ func (b *FilterButton) onClick(event *vecty.Event) {
 		Filter: b.Filter,
 	})
 
-	event.PreventDefault()
+	event.Target.Call("preventDefault") // this is garbage, there has to be a better way
 }
 
 // Render implements the vecty.Component interface.

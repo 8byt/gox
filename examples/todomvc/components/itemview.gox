@@ -1,0 +1,97 @@
+package components
+
+import (
+	"github.com/8byt/gox/examples/todomvc/actions"
+	"github.com/8byt/gox/examples/todomvc/dispatcher"
+	"github.com/8byt/gox/examples/todomvc/store/model"
+	"github.com/gopherjs/vecty"
+)
+
+// ItemView is a vecty.Component which represents a single item in the TODO
+// list.
+type ItemView struct {
+	vecty.Core
+
+	Index     int
+	Item      *model.Item
+	editing   bool
+	editTitle string
+	input     *vecty.HTML
+}
+
+// Restore implements the vecty.Restorer interface.
+func (p *ItemView) Restore(prev vecty.Component) bool {
+	if old, ok := prev.(*ItemView); ok {
+		p.editing = old.editing
+		p.editTitle = old.editTitle
+	}
+	return false
+}
+
+func (p *ItemView) onDestroy(event *vecty.Event) {
+	dispatcher.Dispatch(&actions.DestroyItem{
+		Index: p.Index,
+	})
+}
+
+func (p *ItemView) onToggleCompleted(event *vecty.Event) {
+	dispatcher.Dispatch(&actions.SetCompleted{
+		Index:     p.Index,
+		Completed: event.Target.Get("checked").Bool(),
+	})
+}
+
+func (p *ItemView) onStartEdit(event *vecty.Event) {
+	p.editing = true
+	p.editTitle = p.Item.Title
+	vecty.Rerender(p)
+	p.input.Node().Call("focus")
+}
+
+func (p *ItemView) onEditInput(event *vecty.Event) {
+	p.editTitle = event.Target.Get("value").String()
+	vecty.Rerender(p)
+}
+
+func (p *ItemView) onStopEdit(event *vecty.Event) {
+	p.editing = false
+	vecty.Rerender(p)
+	dispatcher.Dispatch(&actions.SetTitle{
+		Index: p.Index,
+		Title: p.editTitle,
+	})
+
+	event.Object.Call("preventDefault")
+}
+
+// Render implements the vecty.Component interface.
+func (p *ItemView) Render() *vecty.HTML {
+    p.input = <input
+        class="edit"
+        value={p.editTitle}
+        onInput={p.onEditInput}/>
+
+    classes := ""
+    // should probably find a better way to do this
+    if p.Item.Completed {
+        classes += "completed"
+    }
+    if p.editing {
+        classes += " editing"
+    }
+
+    return <li class={classes}>
+        <div class="view">
+            <input
+                class="toggle"
+                type="checkbox"
+                checked={p.Item.Completed}
+                onChange={p.onToggleCompleted}/>
+            <label>{vecty.Text(p.Item.Title)}</label>
+            <button class="destroy" onClick={p.onDestroy} />
+        </div>
+        <form style="margin: 0" onSubmit={p.onStopEdit}>
+            {p.input}
+        </form>
+    </li>
+}

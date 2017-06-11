@@ -1,0 +1,137 @@
+package components
+
+import (
+	"fmt"
+
+	"github.com/8byt/gox/examples/todomvc/actions"
+	"github.com/8byt/gox/examples/todomvc/dispatcher"
+	"github.com/8byt/gox/examples/todomvc/store"
+	"github.com/8byt/gox/examples/todomvc/store/model"
+	"github.com/gopherjs/vecty"
+)
+
+// PageView is a vecty.Component which represents the entire page.
+type PageView struct {
+	vecty.Core
+
+	Items        []*model.Item
+	newItemTitle string
+}
+
+// Restore implements the vecty.Restorer interface.
+func (p *PageView) Restore(prev vecty.Component) bool {
+	if old, ok := prev.(*PageView); ok {
+		p.newItemTitle = old.newItemTitle
+	}
+	return false
+}
+
+func (p *PageView) onNewItemTitleInput(event *vecty.Event) {
+	p.newItemTitle = event.Target.Get("value").String()
+	vecty.Rerender(p)
+}
+
+func (p *PageView) onAdd(event *vecty.Event) {
+	dispatcher.Dispatch(&actions.AddItem{
+		Title: p.newItemTitle,
+	})
+	p.newItemTitle = ""
+	vecty.Rerender(p)
+
+	event.Object.Call("preventDefault")
+}
+
+func (p *PageView) onClearCompleted(event *vecty.Event) {
+	dispatcher.Dispatch(&actions.ClearCompleted{})
+}
+
+func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
+	dispatcher.Dispatch(&actions.SetAllCompleted{
+		Completed: event.Target.Get("checked").Bool(),
+	})
+}
+
+// Render implements the vecty.Component interface.
+func (p *PageView) Render() *vecty.HTML {
+    return <body>
+        <section class="todoapp">
+            {p.renderHeader()}
+            {vecty.If(len(store.Items) > 0,
+                p.renderItemList(),
+                p.renderFooter(),
+            )}
+        </section>
+        {p.renderInfo()}
+    </body>
+}
+
+func (p *PageView) renderHeader() *vecty.HTML {
+    return <header class="header">
+        <h1>todos</h1>
+        <form style="margin: 0" onSubmit={p.onAdd}>
+            <input
+                class="new-todo"
+                placeholder="What needs to be done?"
+                autofocus
+                value={p.newItemTitle}
+                onInput={p.onNewItemTitleInput}/>
+        </form>
+    </header>
+}
+
+func (p *PageView) renderFooter() *vecty.HTML {
+	count := store.ActiveItemCount()
+	var itemsLeftText = " items left"
+	if count == 1 {
+		itemsLeftText = " item left"
+	}
+
+	return <footer class="footer">
+	    <span class="todo-count">
+	        <strong>{vecty.Text(fmt.Sprintf("%d", count))}</strong>
+	        {vecty.Text(itemsLeftText)}
+	    </span>
+	    <ul class="filters">
+	        <FilterButton Label="All" Filter={model.All}/>&nbsp;
+	        <FilterButton Label="Active" Filter={model.Active}/>&nbsp;
+	        <FilterButton Label="Completed" Filter={model.Completed}/>
+	    </ul>
+	    {vecty.If(store.CompletedItemCount() > 0,
+	        <button class="clear-completed" onClick={p.onClearCompleted}>
+	            {vecty.Text(fmt.Sprintf("Clear completed (%d)", store.CompletedItemCount()))}
+	        </button>,
+	    )}
+    </footer>
+}
+
+func (p *PageView) renderInfo() *vecty.HTML {
+    return <footer class="info">
+        <p>Double-click to edit a todo</p>
+        <p>Created by <a href="http://github.com/neelance">Richard Musiol</a></p>
+        <p>Converted to gox by <a href="http://github.com/wolfd">Danny Wolf</a></p>
+        <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+    </footer>
+}
+
+func (p *PageView) renderItemList() *vecty.HTML {
+	var items vecty.List
+	for i, item := range store.Items {
+		if (store.Filter == model.Active && item.Completed) || (store.Filter == model.Completed && !item.Completed) {
+			continue
+		}
+		items = append(items, <ItemView Index={i} Item={item} />)
+	}
+
+    return <section class="main">
+        <input
+            id="toggle-all"
+            class="toggle-all"
+            type="checkbox"
+            checked={store.CompletedItemCount() == len(store.Items)}
+            onChange={p.onToggleAllCompleted}/>
+        <label for="toggle-all">Mark all as complete</label>
+        <ul class="todo-list">
+            {items}
+        </ul>
+    </section>
+}

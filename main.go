@@ -28,12 +28,6 @@ func Transpile(directory string) {
 		log.Fatalf("Unable to read directory: %v", err)
 	}
 
-	genDirectory := directory + "_gen"
-	// create gen dir
-	if _, err := os.Stat(genDirectory); os.IsNotExist(err) {
-		os.Mkdir(genDirectory, os.ModePerm)
-	}
-
 	cfg := &printer.Config{Mode: printer.GoxToGo | printer.RawFormat}
 
 	fset := token.NewFileSet()
@@ -50,7 +44,7 @@ func Transpile(directory string) {
 			}
 
 			//cfg.Fprint(os.Stdout, fset, file)
-			of, err := os.Create(filepath.Join(genDirectory, name[:len(name)-1]))
+			of, err := os.Create(filepath.Join(directory, name[:len(name)-1])) // lol
 			cfg.Fprint(of, fset, file)
 
 			if err != nil {
