@@ -24,7 +24,7 @@ func main() {
 ```
 ## Why?
 Two big reasons:
- - It would be nice to have type safety, but I'm unwilling to write Vecty components
+ - It would be nice to have type safety, but I'm unwilling to write longform Vecty components
  - It would be nice to know how Go parsing works
  - I would like to learn Go by modifying its AST (Danny's reason)
  - I want to write frontend code, but I don't want JS (Eric's reason)
