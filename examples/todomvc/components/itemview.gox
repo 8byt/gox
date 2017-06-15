@@ -87,7 +87,7 @@ func (p *ItemView) Render() *vecty.HTML {
 				type="checkbox"
 				checked={p.Item.Completed}
 				onChange={p.onToggleCompleted}/>
-			<label>{vecty.Text(p.Item.Title)}</label>
+			<label onDblClick={p.onStartEdit}>{vecty.Text(p.Item.Title)}</label>
 			<button class="destroy" onClick={p.onDestroy} />
 		</div>
 		<form style="margin: 0" onSubmit={p.onStopEdit}>
