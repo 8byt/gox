@@ -58,6 +58,19 @@ var eventMap = map[string]string{
 	"onWaiting":        "waiting",
 }
 
+var attrMap = map[string]string{
+	"autofocus":   "autofocus",
+	"checked":     "checked",
+	"class":       "className",
+	"for":         "htmlFor",
+	"href":        "href",
+	"id":          "id",
+	"placeholder": "placeholder",
+	"src":         "src",
+	"type":        "type",
+	"value":       "value",
+}
+
 func goxToVecty(gox *ast.GoxExpr) ast.Expr {
 	isComponent := unicode.IsUpper(rune(gox.TagName.Name[0]))
 
@@ -161,6 +174,17 @@ func mapProps(goxAttrs []*ast.GoxAttrStmt) []ast.Expr {
 		// if prop is an event listener (e.g. "onClick")
 		if _, ok := eventMap[attr.Lhs.Name]; ok {
 			expr = newEventListener(attr)
+		} else if mappedName, ok := attrMap[attr.Lhs.Name]; ok {
+			// if it's a vecty controlled prop
+			expr = newCallExpr(
+				newSelectorExpr("vecty", "Property"),
+				[]ast.Expr{
+					&ast.BasicLit{
+						Kind:  token.STRING,
+						Value: strconv.Quote(mappedName)},
+					attr.Rhs,
+				},
+			)
 		} else {
 			// if prop is a normal attribute
 			expr = newCallExpr(
