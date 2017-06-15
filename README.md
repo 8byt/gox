@@ -45,7 +45,7 @@ from [our TodoMVC implementation](https://github.com/8byt/gox/blob/master/exampl
 ## alright, I'm convinced, get me started
 Wow! Okay I don't think we thought that would happen.
 
-For now, clone this repo, and run `go build .`
+For now, clone this repo, and build it.
 
 Use `gox <directory>` to convert `.gox` files into `.go` files (they stay in the same directory)
 
