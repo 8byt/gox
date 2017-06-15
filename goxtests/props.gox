@@ -1,9 +1,9 @@
 package components
 
 import (
-    "strconv"
-    "github.com/gopherjs/vecty"
-    "github.com/gopherjs/gopherjs/js"
+	"strconv"
+	"github.com/gopherjs/vecty"
+	"github.com/gopherjs/gopherjs/js"
 )
 
 type PropsComponent struct {
@@ -13,15 +13,15 @@ type PropsComponent struct {
 }
 
 func (b *PropsComponent) Render() *vecty.HTML {
-    return <div props="dot" props={"." + "props"} empty>
-        <h1>Holy shit it worked</h1>
-        now introducing: props
-        <h2>gox is JSX for Go</h2>
-        <p>why?</p>
-        <i>why not?</i>
-        <div>{vecty.Text(b.name)}</div>
-        {vecty.Text(strconv.Itoa(b.other + 10))}
-    </div>
+	return <div props="dot" props={"." + "props"} empty>
+		<h1>Holy shit it worked</h1>
+		now introducing: props
+		<h2>gox is JSX for Go</h2>
+		<p>why?</p>
+		<i>why not?</i>
+		<div>{vecty.Text(b.name)}</div>
+		{vecty.Text(strconv.Itoa(b.other + 10))}
+	</div>
 }
 
 type BodyComponent struct {
@@ -29,28 +29,28 @@ type BodyComponent struct {
 }
 
 func (b *BodyComponent) Render() *vecty.HTML {
-    return <body>
-        <PropsComponent
-            name="hello"
-            other={123}/>
-        <ButtonComponent/>
-    </body>
+	return <body>
+		<PropsComponent
+			name="hello"
+			other={123}/>
+		<ButtonComponent/>
+	</body>
 }
 
 type ButtonComponent struct {
-    vecty.Core
-    timesClicked int
+	vecty.Core
+	timesClicked int
 }
 
 func (b *ButtonComponent) Render() *vecty.HTML {
-    return <button class="btn btn-primary" onClick={b.onClick}>
-        I'm a button
-        {vecty.Text(strconv.Itoa(b.timesClicked))}
-    </button>
+	return <button class="btn btn-primary" onClick={b.onClick}>
+		I'm a button
+		{vecty.Text(strconv.Itoa(b.timesClicked))}
+	</button>
 }
 
 func (b *ButtonComponent) onClick(e *vecty.Event) {
 	js.Global.Get("console").Call("log", b.timesClicked)
-    b.timesClicked++
-    vecty.Rerender(b)
+	b.timesClicked++
+	vecty.Rerender(b)
 }

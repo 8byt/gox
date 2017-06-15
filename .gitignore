@@ -1,6 +1,8 @@
 gox
 goxtests_gen
 .idea/misc.xml
+.idea/codeStyleSettings.xml
+
 # Created by https://www.gitignore.io/api/go,osx,vim,linux,windows,intellij,sublimetext
 
 ### Go ###

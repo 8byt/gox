@@ -53,30 +53,30 @@ func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 
 // Render implements the vecty.Component interface.
 func (p *PageView) Render() *vecty.HTML {
-    return <body>
-        <section class="todoapp">
-            {p.renderHeader()}
-            {vecty.If(len(store.Items) > 0,
-                p.renderItemList(),
-                p.renderFooter(),
-            )}
-        </section>
-        {p.renderInfo()}
-    </body>
+	return <body>
+		<section class="todoapp">
+			{p.renderHeader()}
+			{vecty.If(len(store.Items) > 0,
+				p.renderItemList(),
+				p.renderFooter(),
+			)}
+		</section>
+		{p.renderInfo()}
+	</body>
 }
 
 func (p *PageView) renderHeader() *vecty.HTML {
-    return <header class="header">
-        <h1>todos</h1>
-        <form style="margin: 0" onSubmit={p.onAdd}>
-            <input
-                class="new-todo"
-                placeholder="What needs to be done?"
-                autofocus
-                value={p.newItemTitle}
-                onInput={p.onNewItemTitleInput}/>
-        </form>
-    </header>
+	return <header class="header">
+		<h1>todos</h1>
+		<form style="margin: 0" onSubmit={p.onAdd}>
+			<input
+				class="new-todo"
+				placeholder="What needs to be done?"
+				autofocus
+				value={p.newItemTitle}
+				onInput={p.onNewItemTitleInput}/>
+		</form>
+	</header>
 }
 
 func (p *PageView) renderFooter() *vecty.HTML {
@@ -87,30 +87,30 @@ func (p *PageView) renderFooter() *vecty.HTML {
 	}
 
 	return <footer class="footer">
-	    <span class="todo-count">
-	        <strong>{vecty.Text(fmt.Sprintf("%d", count))}</strong>
-	        {vecty.Text(itemsLeftText)}
-	    </span>
-	    <ul class="filters">
-	        <FilterButton Label="All" Filter={model.All}/>&nbsp;
-	        <FilterButton Label="Active" Filter={model.Active}/>&nbsp;
-	        <FilterButton Label="Completed" Filter={model.Completed}/>
-	    </ul>
-	    {vecty.If(store.CompletedItemCount() > 0,
-	        <button class="clear-completed" onClick={p.onClearCompleted}>
-	            {vecty.Text(fmt.Sprintf("Clear completed (%d)", store.CompletedItemCount()))}
-	        </button>,
-	    )}
-    </footer>
+		<span class="todo-count">
+			<strong>{vecty.Text(fmt.Sprintf("%d", count))}</strong>
+			{vecty.Text(itemsLeftText)}
+		</span>
+		<ul class="filters">
+			<FilterButton Label="All" Filter={model.All}/>&nbsp;
+			<FilterButton Label="Active" Filter={model.Active}/>&nbsp;
+			<FilterButton Label="Completed" Filter={model.Completed}/>
+		</ul>
+		{vecty.If(store.CompletedItemCount() > 0,
+			<button class="clear-completed" onClick={p.onClearCompleted}>
+				{vecty.Text(fmt.Sprintf("Clear completed (%d)", store.CompletedItemCount()))}
+			</button>,
+		)}
+	</footer>
 }
 
 func (p *PageView) renderInfo() *vecty.HTML {
-    return <footer class="info">
-        <p>Double-click to edit a todo</p>
-        <p>Created by <a href="http://github.com/neelance">Richard Musiol</a></p>
-        <p>Converted to gox by <a href="http://github.com/wolfd">Danny Wolf</a></p>
-        <p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
-    </footer>
+	return <footer class="info">
+		<p>Double-click to edit a todo</p>
+		<p>Created by <a href="http://github.com/neelance">Richard Musiol</a></p>
+		<p>Converted to gox by <a href="http://github.com/wolfd">Danny Wolf</a></p>
+		<p>Part of <a href="http://todomvc.com">TodoMVC</a></p>
+	</footer>
 }
 
 func (p *PageView) renderItemList() *vecty.HTML {
@@ -122,16 +122,16 @@ func (p *PageView) renderItemList() *vecty.HTML {
 		items = append(items, <ItemView Index={i} Item={item} />)
 	}
 
-    return <section class="main">
-        <input
-            id="toggle-all"
-            class="toggle-all"
-            type="checkbox"
-            checked={store.CompletedItemCount() == len(store.Items)}
-            onChange={p.onToggleAllCompleted}/>
-        <label for="toggle-all">Mark all as complete</label>
-        <ul class="todo-list">
-            {items}
-        </ul>
-    </section>
+	return <section class="main">
+		<input
+			id="toggle-all"
+			class="toggle-all"
+			type="checkbox"
+			checked={store.CompletedItemCount() == len(store.Items)}
+			onChange={p.onToggleAllCompleted}/>
+		<label for="toggle-all">Mark all as complete</label>
+		<ul class="todo-list">
+			{items}
+		</ul>
+	</section>
 }

@@ -3,5 +3,5 @@ package components
 import "github.com/gopherjs/vecty"
 
 func divs() *vecty.HTML {
-    return <div></div>
+	return <div></div>
 }

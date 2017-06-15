@@ -27,14 +27,14 @@ func (b *FilterButton) onClick(event *vecty.Event) {
 
 // Render implements the vecty.Component interface.
 func (b *FilterButton) Render() *vecty.HTML {
-    classes := ""
-    if store.Filter == b.Filter {
-        classes += "selected"
-    }
+	classes := ""
+	if store.Filter == b.Filter {
+		classes += "selected"
+	}
 
-    return <li>
-        <a class={classes} href="#" onClick={b.onClick}>
-            {vecty.Text(b.Label)}
-        </a>
-    </li>
+	return <li>
+		<a class={classes} href="#" onClick={b.onClick}>
+			{vecty.Text(b.Label)}
+		</a>
+	</li>
 }

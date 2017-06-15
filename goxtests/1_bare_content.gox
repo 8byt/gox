@@ -3,5 +3,5 @@ package components
 import "github.com/gopherjs/vecty"
 
 func bareContent() *vecty.HTML {
-    return <div>I am bare content</div>
+	return <div>I am bare content</div>
 }

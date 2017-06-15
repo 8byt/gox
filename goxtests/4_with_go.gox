@@ -3,5 +3,5 @@ package components
 import "github.com/gopherjs/vecty"
 
 func withGoExpr() *vecty.HTML {
-    return <i>{"Gox"}</i>
+	return <i>{"Gox"}</i>
 }

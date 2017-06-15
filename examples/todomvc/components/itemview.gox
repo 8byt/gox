@@ -66,32 +66,32 @@ func (p *ItemView) onStopEdit(event *vecty.Event) {
 
 // Render implements the vecty.Component interface.
 func (p *ItemView) Render() *vecty.HTML {
-    p.input = <input
-        class="edit"
-        value={p.editTitle}
-        onInput={p.onEditInput}/>
+	p.input = <input
+		class="edit"
+		value={p.editTitle}
+		onInput={p.onEditInput}/>
 
-    classes := ""
-    // should probably find a better way to do this
-    if p.Item.Completed {
-        classes += "completed"
-    }
-    if p.editing {
-        classes += " editing"
-    }
+	classes := ""
+	// should probably find a better way to do this
+	if p.Item.Completed {
+		classes += "completed"
+	}
+	if p.editing {
+		classes += " editing"
+	}
 
-    return <li class={classes}>
-        <div class="view">
-            <input
-                class="toggle"
-                type="checkbox"
-                checked={p.Item.Completed}
-                onChange={p.onToggleCompleted}/>
-            <label>{vecty.Text(p.Item.Title)}</label>
-            <button class="destroy" onClick={p.onDestroy} />
-        </div>
-        <form style="margin: 0" onSubmit={p.onStopEdit}>
-            {p.input}
-        </form>
-    </li>
+	return <li class={classes}>
+		<div class="view">
+			<input
+				class="toggle"
+				type="checkbox"
+				checked={p.Item.Completed}
+				onChange={p.onToggleCompleted}/>
+			<label>{vecty.Text(p.Item.Title)}</label>
+			<button class="destroy" onClick={p.onDestroy} />
+		</div>
+		<form style="margin: 0" onSubmit={p.onStopEdit}>
+			{p.input}
+		</form>
+	</li>
 }
