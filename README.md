@@ -44,8 +44,11 @@ from [our TodoMVC implementation](https://github.com/8byt/gox/blob/master/exampl
 
 ## alright, I'm convinced, get me started
 Wow! Okay I don't think we thought that would happen.
+
 For now, clone this repo, and run `go build .`
+
 Use `gox <directory>` to convert `.gox` files into `.go` files (they stay in the same directory)
+
 GopherJS should take care of the rest, use [Vecty's docs](https://github.com/gopherjs/vecty) and [GopherJS's docs](https://github.com/gopherjs/gopherjs) to learn more. We use `gopherjs serve` and things magically get transpiled again.
 
 If you want to make this process better, we'd be happy to consider your ideas/PRs.
