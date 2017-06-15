@@ -3,7 +3,6 @@ package main
 import (
 	"fmt"
 
-	"io/ioutil"
 	"log"
 	"os"
 	"path/filepath"
@@ -22,36 +21,43 @@ func main() {
 	}
 }
 
-func Transpile(directory string) {
-	list, err := ioutil.ReadDir(directory)
-	if err != nil {
-		log.Fatalf("Unable to read directory: %v", err)
-	}
+type GoxTranspiler struct {
+	cfg  *printer.Config
+	fset *token.FileSet
+}
 
-	cfg := &printer.Config{Mode: printer.GoxToGo | printer.RawFormat}
+func (g *GoxTranspiler) TranspileFile(path string, f os.FileInfo, err error) error {
+	name := f.Name()
 
-	fset := token.NewFileSet()
+	if !f.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".gox") {
+		fmt.Printf("Transpiling %s\n", path)
+		g.fset.AddFile(filepath.Join(path, name), -1, int(f.Size()))
 
-	for _, fi := range list {
-		name := fi.Name()
+		file, err := parser.ParseFile(g.fset, path, nil, parser.ParseComments)
+		if err != nil {
+			fmt.Println("Can't parse file", err)
+			return err
+		}
 
-		if !fi.IsDir() && !strings.HasPrefix(name, ".") && strings.HasSuffix(name, ".gox") {
-			fset.AddFile(filepath.Join(directory, name), -1, int(fi.Size()))
+		//cfg.Fprint(os.Stdout, fset, file)
+		of, err := os.Create(path[:len(path)-1]) // lol
+		g.cfg.Fprint(of, g.fset, file)
 
-			file, err := parser.ParseFile(fset, filepath.Join(directory, name), nil, parser.ParseComments)
-			if err != nil {
-				fmt.Println("Can't parse file", err)
-			}
-
-			//cfg.Fprint(os.Stdout, fset, file)
-			of, err := os.Create(filepath.Join(directory, name[:len(name)-1])) // lol
-			cfg.Fprint(of, fset, file)
-
-			if err != nil {
-				fmt.Printf("Failed with error: %v", err)
-				log.Fatalf("ParseFile(%s): %v", name, err)
-			}
+		if err != nil {
+			fmt.Printf("Failed with error: %v", err)
+			log.Fatalf("ParseFile(%s): %v", name, err)
+			return err
 		}
 	}
+	return nil
+}
+
+func Transpile(directory string) {
+	goxT := &GoxTranspiler{
+		cfg:  &printer.Config{Mode: printer.GoxToGo | printer.RawFormat},
+		fset: token.NewFileSet(),
+	}
+
+	filepath.Walk(directory, goxT.TranspileFile)
 
 }
