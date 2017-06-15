@@ -72,6 +72,7 @@ GopherJS should take care of the rest, use [Vecty's docs](https://github.com/gop
 If you want to make this process better, we'd be happy to consider your ideas/PRs.
 
 Thanks,
+
 [Eric](https://github.com/HALtheWise) and [Danny](https://github.com/wolfd)
 
 ## License
