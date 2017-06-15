@@ -2,8 +2,26 @@
 ### gox is an extension of Go's syntax that let's you write HTML-style tags directly in your source code.
 #### In other words, it's JSX for Go.
 
-It allows you to write HTML-style tags directly in your GopherJS source, and have them get transpiled into [Vecty](https://github.com/gopherjs/vecty) components.
+Write HTML-style tags directly in your GopherJS source, and have them get transpiled into [Vecty](https://github.com/gopherjs/vecty) components.
 
+Okay take a look:
+```
+package main
+
+import "github.com/gopherjs/vecty"
+
+func main() {
+	woah := <body>
+		<div class="amazing">
+			<h1>gox</h1>
+			<span class={"you could put dynamic content here"}/>
+			yeah you can do bare words too
+		</div>
+	</body>
+	
+	vecty.RenderBody(woah)
+}
+```
 ## Why?
 Two big reasons:
  - It would be nice to have type safety, but I'm unwilling to write Vecty components
@@ -15,7 +33,7 @@ Two big reasons:
 We basically vendored the Go parser/scanner/AST/etc. and just modified it until it fit our needs.
 
 ## Wot?
-Here's an example portion of a `.gox` file.
+Here's a more complicated example portion of a `.gox` file.
 ```
 func (p *PageView) renderItemList() *vecty.HTML {
 	var items vecty.List
