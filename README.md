@@ -1,14 +1,14 @@
 # gox
+### gox is an extension of Go's syntax that let's you write HTML-style tags directly in your source code.
+#### In other words, it's JSX for Go.
 
-## What's gox?
-gox is a language that was born out of the desire to have something like JSX when using GopherJS.
-It allows you to write HTML tags directly in your GopherJS source, and have them get transpiled into [Vecty](https://github.com/gopherjs/vecty) components.
+It allows you to write HTML-style tags directly in your GopherJS source, and have them get transpiled into [Vecty](https://github.com/gopherjs/vecty) components.
 
 ## Why?
 Two big reasons:
  - It would be nice to have type safety, but I'm unwilling to write Vecty components
  - It would be nice to know how Go parsing works
- - I would like to learn Go (Danny's reason)
+ - I would like to learn Go by modifying its AST (Danny's reason)
  - I want to write frontend code, but I don't want JS (Eric's reason)
 
 ## How?
