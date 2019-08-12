@@ -4,7 +4,7 @@ import (
 	"github.com/8byt/gox/examples/todomvc/actions"
 	"github.com/8byt/gox/examples/todomvc/dispatcher"
 	"github.com/8byt/gox/examples/todomvc/store/model"
-	"github.com/gopherjs/vecty/storeutil"
+	"github.com/gopherjs/vecty/example/todomvc/store/storeutil"
 )
 
 var (
