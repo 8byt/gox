@@ -61,11 +61,11 @@ func (p *ItemView) onStopEdit(event *vecty.Event) {
 		Title: p.editTitle,
 	})
 
-	event.Object.Call("preventDefault")
+	event.Value.Call("preventDefault")
 }
 
 // Render implements the vecty.Component interface.
-func (p *ItemView) Render() *vecty.HTML {
+func (p *ItemView) Render() vecty.ComponentOrHTML {
 	p.input = <input
 		class="edit"
 		value={p.editTitle}
