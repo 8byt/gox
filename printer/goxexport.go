@@ -83,8 +83,16 @@ func goxToVecty(gox *ast.GoxExpr) ast.Expr {
 				Value: strconv.Quote(gox.TagName.Name),
 			}}
 
-		// Add the attributes
-		args = append(args, mapProps(gox.Attrs)...)
+		if len(gox.Attrs) > 0 {
+			// Create markup expr and add attributes
+			markup := newCallExpr(
+				newSelectorExpr("vecty", "Markup"),
+				mapProps(gox.Attrs),
+			)
+
+			// Add the markup
+			args = append(args, markup)
+		}
 
 		// Add the contents
 		for _, expr := range gox.X {
