@@ -37,8 +37,7 @@ func (p *PageView) onAdd(event *vecty.Event) {
 	})
 	p.newItemTitle = ""
 	vecty.Rerender(p)
-
-	event.Object.Call("preventDefault")
+	event.Value.Call("preventDefault")
 }
 
 func (p *PageView) onClearCompleted(event *vecty.Event) {
@@ -52,7 +51,7 @@ func (p *PageView) onToggleAllCompleted(event *vecty.Event) {
 }
 
 // Render implements the vecty.Component interface.
-func (p *PageView) Render() *vecty.HTML {
+func (p *PageView) Render() vecty.ComponentOrHTML {
 	return <body>
 		<section class="todoapp">
 			{p.renderHeader()}

@@ -22,11 +22,11 @@ func (b *FilterButton) onClick(event *vecty.Event) {
 		Filter: b.Filter,
 	})
 
-	event.Object.Call("preventDefault")
+	event.Value.Call("preventDefault")
 }
 
 // Render implements the vecty.Component interface.
-func (b *FilterButton) Render() *vecty.HTML {
+func (b *FilterButton) Render() vecty.ComponentOrHTML {
 	classes := ""
 	if store.Filter == b.Filter {
 		classes += "selected"

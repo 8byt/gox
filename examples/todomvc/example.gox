@@ -17,8 +17,8 @@ func main() {
 	attachLocalStorage()
 
 	vecty.SetTitle("GopherJS • gox • TodoMVC")
-	vecty.AddStylesheet("node_modules/todomvc-common/base.css")
-	vecty.AddStylesheet("node_modules/todomvc-app-css/index.css")
+	vecty.AddStylesheet("https://rawgit.com/tastejs/todomvc-common/master/base.css")
+	vecty.AddStylesheet("https://rawgit.com/tastejs/todomvc-app-css/master/index.css")
 
 	p := <PageView/>;
 	store.Listeners.Add(p, func() {
