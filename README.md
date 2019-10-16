@@ -1,41 +1,69 @@
 # gox
+
 ### gox is an extension of Go's syntax that let's you write HTML-style tags directly in your source code.
+
 #### In other words, it's JSX for Go.
 
-Write HTML-style tags directly in your GopherJS source, and have them get transpiled into [Vecty](https://github.com/gopherjs/vecty) components.
+Write HTML-style tags directly in your Go source, and have them get transpiled into [Vecty](https://github.com/gopherjs/vecty) components that can be run with GopherJS or WebAssembly.
 
 Okay take a look:
+
 ```
 package main
 
 import "github.com/gopherjs/vecty"
 
-func main() {
-	woah := <body>
+type Page struct{
+	vecty.Core
+}
+
+func (w *Page) Render() vecty.ComponentOrHTML {
+	return <body>
 		<div class="amazing">
 			<h1>gox</h1>
 			<span class={"you could put dynamic content here"}/>
 			yeah you can do bare words too
 		</div>
 	</body>
-	
-	vecty.RenderBody(woah)
+}
+
+func main() {
+	vecty.RenderBody(new(Page))
 }
 ```
+
+## Quickstart
+
+```
+git clone github.com/8byt/gox
+cd gox/
+go run . examples/
+
+go install github.com/hajimehoshi/wasmserve
+
+wasmserve github.com/8byt/gox/examples/readme_1/
+google-chrome http://localhost:8080
+```
+
 ## Why?
+
 Four big reasons:
- - It would be nice to have type safety, but I'm unwilling to write longform Vecty components
- - It would be nice to know how Go parsing works
- - I would like to learn Go by modifying its AST (Danny's reason)
- - I want to write frontend code, but I don't want JS (Eric's reason)
+
+- It would be nice to have type safety, but I'm unwilling to write longform Vecty components
+- It would be nice to know how Go parsing works
+- I would like to learn Go by modifying its AST (Danny's reason)
+- I want to write frontend code, but I don't want JS (Eric's reason)
 
 ## How?
+
 We basically vendored the Go parser/scanner/AST/etc. and just modified it until it fit our needs.
 
 ## Wot?
+
 Here's a more complicated example portion of a `.gox` file.
+
 ```
-func (p *PageView) renderItemList() *vecty.HTML {
+func (p *PageView) renderItemList() vecty.ComponentOrHTML {
 	var items vecty.List
 	for i, item := range store.Items {
 		if (store.Filter == model.Active && item.Completed) || (store.Filter == model.Completed && !item.Completed) {
@@ -58,9 +86,11 @@ func (p *PageView) renderItemList() *vecty.HTML {
 	</section>
 }
 ```
+
 from [our TodoMVC implementation](https://github.com/8byt/gox/blob/master/examples/todomvc/components/pageview.gox)
 
 ## alright, I'm convinced, get me started
+
 Wow! Okay I don't think we thought that would happen.
 
 For now, clone this repo, and build it.
@@ -76,6 +106,7 @@ Thanks,
 [Eric](https://github.com/HALtheWise) and [Danny](https://github.com/wolfd)
 
 ## License
+
 All modifications are MIT
 
 Original Go code is all BSD

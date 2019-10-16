@@ -15,7 +15,9 @@ import (
 
 func main() {
 	if len(os.Args) > 1 {
-		Transpile(os.Args[1])
+		for _, dir := range os.Args[1:] {
+			Transpile(dir)
+		}
 	} else {
 		Transpile("goxtests")
 	}

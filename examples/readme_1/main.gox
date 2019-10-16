@@ -1,0 +1,21 @@
+package main
+
+import "github.com/gopherjs/vecty"
+
+type Page struct{
+	vecty.Core
+}
+
+func (w *Page) Render() vecty.ComponentOrHTML {
+	return <body>
+		<div class="amazing">
+			<h1>gox</h1>
+			<span class={"you could put dynamic content here"}/>
+			yeah you can do bare words too
+		</div>
+	</body>
+}
+
+func main() {
+	vecty.RenderBody(new(Page))
+}
