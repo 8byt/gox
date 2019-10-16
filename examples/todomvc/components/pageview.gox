@@ -64,7 +64,7 @@ func (p *PageView) Render() vecty.ComponentOrHTML {
 	</body>
 }
 
-func (p *PageView) renderHeader() *vecty.HTML {
+func (p *PageView) renderHeader() vecty.ComponentOrHTML {
 	return <header class="header">
 		<h1>todos</h1>
 		<form style="margin: 0" onSubmit={p.onAdd}>
@@ -78,7 +78,7 @@ func (p *PageView) renderHeader() *vecty.HTML {
 	</header>
 }
 
-func (p *PageView) renderFooter() *vecty.HTML {
+func (p *PageView) renderFooter() vecty.ComponentOrHTML {
 	count := store.ActiveItemCount()
 	var itemsLeftText = " items left"
 	if count == 1 {
@@ -103,7 +103,7 @@ func (p *PageView) renderFooter() *vecty.HTML {
 	</footer>
 }
 
-func (p *PageView) renderInfo() *vecty.HTML {
+func (p *PageView) renderInfo() vecty.ComponentOrHTML {
 	return <footer class="info">
 		<p>Double-click to edit a todo</p>
 		<p>Created by <a href="http://github.com/neelance">Richard Musiol</a></p>
@@ -112,7 +112,7 @@ func (p *PageView) renderInfo() *vecty.HTML {
 	</footer>
 }
 
-func (p *PageView) renderItemList() *vecty.HTML {
+func (p *PageView) renderItemList() vecty.ComponentOrHTML {
 	var items vecty.List
 	for i, item := range store.Items {
 		if (store.Filter == model.Active && item.Completed) || (store.Filter == model.Completed && !item.Completed) {

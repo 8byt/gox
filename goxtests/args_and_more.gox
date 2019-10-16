@@ -2,11 +2,11 @@ package components
 
 import "github.com/gopherjs/vecty"
 
-func asAnArg(arg *vecty.HTML) *vecty.HTML {
+func asAnArg(arg vecty.ComponentOrHTML) vecty.ComponentOrHTML {
 	return arg
 }
 
-func oohBoy() *vecty.HTML {
+func oohBoy() vecty.ComponentOrHTML {
 	header := <h1>Hello</h1>
 	content := <p>paragraphs</p>
 

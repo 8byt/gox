@@ -3,7 +3,7 @@ package components
 import (
 	"strconv"
 	"github.com/gopherjs/vecty"
-	"github.com/gopherjs/gopherjs/js"
+	"syscall/js"
 )
 
 type PropsComponent struct {
@@ -12,7 +12,7 @@ type PropsComponent struct {
 	other int
 }
 
-func (b *PropsComponent) Render() *vecty.HTML {
+func (b *PropsComponent) Render() vecty.ComponentOrHTML {
 	return <div props="dot" props={"." + "props"} empty>
 		<h1>Holy shit it worked</h1>
 		now introducing: props
@@ -28,7 +28,7 @@ type BodyComponent struct {
 	vecty.Core
 }
 
-func (b *BodyComponent) Render() *vecty.HTML {
+func (b *BodyComponent) Render() vecty.ComponentOrHTML {
 	return <body>
 		<PropsComponent
 			name="hello"
@@ -42,7 +42,7 @@ type ButtonComponent struct {
 	timesClicked int
 }
 
-func (b *ButtonComponent) Render() *vecty.HTML {
+func (b *ButtonComponent) Render() vecty.ComponentOrHTML {
 	return <button class="btn btn-primary" onClick={b.onClick}>
 		I'm a button
 		{vecty.Text(strconv.Itoa(b.timesClicked))}
@@ -50,7 +50,7 @@ func (b *ButtonComponent) Render() *vecty.HTML {
 }
 
 func (b *ButtonComponent) onClick(e *vecty.Event) {
-	js.Global.Get("console").Call("log", b.timesClicked)
+	js.Global().Get("console").Call("log", b.timesClicked)
 	b.timesClicked++
 	vecty.Rerender(b)
 }

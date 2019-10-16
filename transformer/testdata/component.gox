@@ -13,7 +13,7 @@ type MyComponent struct{
     Parameter1 string
 }
 
-func (c *MyComponent) Render() *vecty.HTML {
+func (c *MyComponent) Render() vecty.ComponentOrHTML {
     return <div>{c.Parameter1}</div>
 }
 

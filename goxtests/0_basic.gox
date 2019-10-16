@@ -2,6 +2,6 @@ package components
 
 import "github.com/gopherjs/vecty"
 
-func divs() *vecty.HTML {
+func divs() vecty.ComponentOrHTML {
 	return <div></div>
 }

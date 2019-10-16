@@ -16,7 +16,7 @@ type ItemView struct {
 	Item      *model.Item
 	editing   bool
 	editTitle string
-	input     *vecty.HTML
+	input     vecty.ComponentOrHTML
 }
 
 // Restore implements the vecty.Restorer interface.

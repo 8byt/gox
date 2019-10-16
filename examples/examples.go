@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/8byt/gox/goxtests_gen"
+	components "github.com/8byt/gox/goxtests"
 	"github.com/gopherjs/gopherjs/js"
 	"github.com/gopherjs/vecty"
 )
