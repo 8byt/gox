@@ -1,0 +1,12 @@
+github.com/gopherjs/gopherjs v0.0.0-20181103185306-d547d1d9531e/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
+github.com/gopherjs/gopherjs v0.0.0-20190812055313-0a3de5b74c85 h1:vEob5Wxuulvwn6xgni/YDeutKvXD4V82GISBPVlKgug=
+github.com/gopherjs/gopherjs v0.0.0-20190812055313-0a3de5b74c85/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
+github.com/gopherjs/vecty v0.0.0-20190121070609-2a1e317a95ae/go.mod h1:cCfq26X9MMEw/ZgZRpDDNSWfC7CO/u2ba/nGpjEVM/o=
+github.com/gopherjs/vecty v0.0.0-20190701174234-2b6fc20f8913 h1:h5R2K5Wqn5av3i4xHkyVgI2qCSbpJHAqqAkKpMPh0eE=
+github.com/gopherjs/vecty v0.0.0-20190701174234-2b6fc20f8913/go.mod h1:Yd9AOfl6lN1BWnVnvaSBwKiTCAcnlIGGvdsODOOZ9RY=
+github.com/gopherjs/vecty/example v0.0.0-20190701174234-2b6fc20f8913 h1:2/EKXDxzZqa7tHaNjeRPixQrpo7IebMeFstuSbA/IeI=
+github.com/gopherjs/vecty/example v0.0.0-20190701174234-2b6fc20f8913/go.mod h1:Q+pviq0v9oAECJMu9Ti/nfy2UlaZ90hTlbo2EzOH/I4=
+github.com/microcosm-cc/bluemonday v1.0.2/go.mod h1:iVP4YcDBq+n/5fb23BhYFvIMq/leAFZyRl6bYmGDlGc=
+github.com/shurcooL/sanitized_anchor_name v1.0.0/go.mod h1:1NzhyTcUVG4SuEtjjoZeVRXNmyL/1OwPU0+IJeTBvfc=
+github.com/slimsag/blackfriday v2.0.0+incompatible/go.mod h1:K2UwInbJ1ywJkRQ2IMfjP071c3KZu7FiOn2NW97ckKk=
+golang.org/x/net v0.0.0-20181220203305-927f97764cc3/go.mod h1:mL1N/T3taQHkDXs73rZJwtUhF3w3ftmwwsq0BUmARs4=
